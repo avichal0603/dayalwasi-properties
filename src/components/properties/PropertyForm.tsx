@@ -46,7 +46,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
     city: DEFAULT_CITY,
     area_gaj: 0,
     price: 0,
-    facing: "",
+    facing: undefined,
     availability: "available",
     construction_status: "ready",
     registry_status: "unregistered",
