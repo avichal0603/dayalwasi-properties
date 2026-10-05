@@ -74,7 +74,7 @@ export default function PropertiesPage() {
             </div>
             <h3 className="text-xl font-bold text-brown-900 mb-2">No properties found</h3>
             <p className="text-brown-500 max-w-md mx-auto">
-              We couldn't find any properties matching your current filters. Try adjusting your search criteria or clear the filters.
+              We couldn&apos;t find any properties matching your current filters. Try adjusting your search criteria or clear the filters.
             </p>
             <button
               onClick={() => setFilters({})}

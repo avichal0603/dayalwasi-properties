@@ -15,8 +15,9 @@ import {
   PROPERTY_TYPE_LABELS,
   REGISTRY_LABELS,
   FACING_LABELS,
+  formatPriceINR,
 } from "@/lib/constants";
-import { gajToSqft, calcPricePerGaj, generateShareText, formatPriceINR } from "@/lib/utils";
+import { gajToSqft, calcPricePerGaj, generateShareText } from "@/lib/utils";
 import {
   ArrowLeft,
   Edit,
