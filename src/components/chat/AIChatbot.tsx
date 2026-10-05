@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { MessageCircle, X, Send, Building2, MapPin } from 'lucide-react';
-import { Property, PropertyType, BHK } from '@/lib/types';
+import { Property, PropertyType } from '@/lib/types';
 import { formatPrice, PROPERTY_TYPE_LABELS, DAYALBAGH_COLONIES } from '@/lib/constants';
 
 export interface Message {
@@ -43,7 +43,7 @@ export default function AIChatbot() {
     let priceMin: number | null = null;
     let colonyMatch: string | null = null;
     let typeMatch: PropertyType | null = null;
-    let bhkMatch: BHK | null = null;
+    let bhkMatch: string | null = null;
     let areaMin: number | null = null;
     let areaMax: number | null = null;
     let isAvailable: boolean | null = null;
@@ -78,18 +78,18 @@ export default function AIChatbot() {
     }
 
     // Parse Type
-    if (query.includes('plot') || query.includes('land')) typeMatch = 'PLOT';
-    else if (query.includes('house') || query.includes('villa')) typeMatch = 'HOUSE';
-    else if (query.includes('flat') || query.includes('apartment')) typeMatch = 'FLAT';
-    else if (query.includes('commercial') || query.includes('shop') || query.includes('office')) typeMatch = 'COMMERCIAL';
-    else if (query.includes('floor')) typeMatch = 'BUILDER_FLOOR';
+    if (query.includes('plot') || query.includes('land')) typeMatch = 'plot';
+    else if (query.includes('house') || query.includes('villa')) typeMatch = 'house';
+    else if (query.includes('flat') || query.includes('apartment')) typeMatch = 'flat';
+    else if (query.includes('commercial') || query.includes('shop') || query.includes('office')) typeMatch = 'commercial';
+    else if (query.includes('floor')) typeMatch = 'floor';
 
     // Parse BHK
     const bhkRegex = /(\d)\s*bhk/i;
     const bMatch = query.match(bhkRegex);
     if (bMatch) {
       const b = parseInt(bMatch[1]);
-      if (b >= 1 && b <= 5) bhkMatch = b as BHK;
+      if (b >= 1 && b <= 5) bhkMatch = b.toString();
     }
 
     // Parse Area
@@ -139,7 +139,7 @@ export default function AIChatbot() {
     let filtered = properties;
 
     if (criteria.isAvailable !== null) {
-      filtered = filtered.filter(p => (p.status === 'AVAILABLE') === criteria.isAvailable);
+      filtered = filtered.filter(p => (p.availability === 'available') === criteria.isAvailable);
     }
     if (criteria.priceMax !== null) {
       filtered = filtered.filter(p => p.price <= criteria.priceMax!);

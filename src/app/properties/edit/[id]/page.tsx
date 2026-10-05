@@ -7,7 +7,6 @@ import { PropertyForm } from "@/components/properties/PropertyForm";
 import { ImageUpload } from "@/components/properties/ImageUpload";
 import { useProperties } from "@/hooks/useProperties";
 import { PropertyFormData, Property } from "@/lib/types";
-import { uploadImage, deleteImage } from "@/lib/supabase";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -49,16 +48,12 @@ export default function EditPropertyPage() {
   const handleRemoveExistingImage = async (index: number) => {
     const urlToRemove = existingImages[index];
     try {
-      // Opt: Delete from storage immediately or wait for form submit
-      // We will delete immediately for simplicity
-      await deleteImage(urlToRemove);
-      
       const updatedImages = [...existingImages];
       updatedImages.splice(index, 1);
       setExistingImages(updatedImages);
       
       // Update the property record
-      await updateProperty(id, { images: updatedImages });
+      await updateProperty(id, {}, [], [urlToRemove]);
       toast.success("Image removed");
     } catch (error) {
       toast.error("Failed to remove image");
@@ -68,25 +63,15 @@ export default function EditPropertyPage() {
   const handleSubmit = async (data: PropertyFormData) => {
     setIsSubmitting(true);
     try {
-      let finalImageUrls = [...existingImages];
-      
       if (newImages.length > 0) {
         toast.loading("Uploading new images...", { id: "upload" });
-        for (const file of newImages) {
-          const url = await uploadImage(file, id);
-          if (url) {
-            finalImageUrls.push(url);
-          }
-        }
-        toast.success("Images uploaded", { id: "upload" });
       }
 
-      const updateData = {
-        ...data,
-        images: finalImageUrls,
-      };
-
-      await updateProperty(id, updateData);
+      await updateProperty(id, data, newImages, []);
+      
+      if (newImages.length > 0) {
+        toast.success("Images uploaded", { id: "upload" });
+      }
       toast.success("Property updated successfully");
       router.push(`/properties/${id}`);
     } catch (error) {

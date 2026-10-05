@@ -114,8 +114,8 @@ export function PropertyFilters({ filters, onFilterChange, colonies }: PropertyF
 
           <select
             className="select-field"
-            value={filters.sortBy || ""}
-            onChange={(e) => handleFilterChange("sortBy", e.target.value)}
+            value={filters.sort_by || ""}
+            onChange={(e) => handleFilterChange("sort_by", e.target.value)}
           >
             <option value="">Sort By</option>
             {Object.entries(SORT_LABELS).map(([key, label]) => (

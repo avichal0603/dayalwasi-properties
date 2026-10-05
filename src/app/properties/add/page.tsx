@@ -7,7 +7,6 @@ import { PropertyForm } from "@/components/properties/PropertyForm";
 import { ImageUpload } from "@/components/properties/ImageUpload";
 import { useProperties } from "@/hooks/useProperties";
 import { PropertyFormData } from "@/lib/types";
-import { uploadImage } from "@/lib/supabase";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -21,27 +20,14 @@ export default function AddPropertyPage() {
   const handleSubmit = async (data: PropertyFormData) => {
     setIsSubmitting(true);
     try {
-      // 1. Create property first to get ID
-      const newProperty = await createProperty(data);
+      const newProperty = await createProperty(data, images);
       
-      // 2. Upload images if any
-      if (images.length > 0 && newProperty) {
-        toast.loading("Uploading images...", { id: "upload" });
-        const uploadedUrls: string[] = [];
-        
-        for (const file of images) {
-          const url = await uploadImage(file, newProperty.id);
-          if (url) {
-            uploadedUrls.push(url);
-          }
-        }
-        
-        toast.success("Images uploaded", { id: "upload" });
-      } else {
+      if (newProperty) {
         toast.success("Property created successfully");
+        router.push(`/properties/${newProperty.id}`);
+      } else {
+        toast.error("Failed to create property");
       }
-      
-      router.push(`/properties/${newProperty?.id || ''}`);
     } catch (error) {
       console.error(error);
       toast.error("Failed to create property");
