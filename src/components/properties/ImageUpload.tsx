@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { UploadCloud, X } from "lucide-react";
+import { UploadCloud, X, Sparkles, Loader2 } from "lucide-react";
 import Image from "next/image";
+import { compressImages } from "@/lib/imageCompression";
 
 interface ImageUploadProps {
   images: File[];
@@ -13,12 +14,24 @@ interface ImageUploadProps {
 }
 
 export function ImageUpload({ images, onImagesChange, existingImages = [], onRemoveExisting }: ImageUploadProps) {
+  const [compressing, setCompressing] = useState(false);
+
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[]) => {
       const remainingSlots = 10 - (images.length + existingImages.length);
       const filesToAdd = acceptedFiles.slice(0, remainingSlots);
       if (filesToAdd.length > 0) {
-        onImagesChange([...images, ...filesToAdd]);
+        setCompressing(true);
+        try {
+          // Compress large photos to lightweight crisp web photos
+          const optimized = await compressImages(filesToAdd);
+          onImagesChange([...images, ...optimized]);
+        } catch (e) {
+          console.error("Compression error, using original files:", e);
+          onImagesChange([...images, ...filesToAdd]);
+        } finally {
+          setCompressing(false);
+        }
       }
     },
     [images, existingImages.length, onImagesChange]
@@ -32,6 +45,7 @@ export function ImageUpload({ images, onImagesChange, existingImages = [], onRem
       "image/webp": [],
     },
     maxFiles: 10,
+    disabled: compressing,
   });
 
   const removeNewImage = (index: number) => {
@@ -55,18 +69,32 @@ export function ImageUpload({ images, onImagesChange, existingImages = [], onRem
         `}
       >
         <input {...getInputProps()} />
-        <UploadCloud className="mx-auto w-12 h-12 text-gold-400 mb-4" />
-        <p className="text-brown-700 font-medium">
-          {isDragActive
-            ? "Drop images here..."
-            : "Drop images here or click to browse"}
-        </p>
-        <p className="text-sm text-brown-500 mt-2">
-          Accepts JPEG, PNG, WEBP (Max 10 images)
-        </p>
-        <p className="text-xs text-brown-400 mt-1">
-          {totalImages} / 10 uploaded
-        </p>
+        {compressing ? (
+          <div className="flex flex-col items-center justify-center py-4">
+            <Loader2 className="w-10 h-10 text-gold-500 animate-spin mb-3" />
+            <p className="text-sm font-semibold text-brown-800">Optimizing images for instant upload...</p>
+            <p className="text-xs text-brown-500 mt-1">Compressing photos to save storage & data</p>
+          </div>
+        ) : (
+          <>
+            <UploadCloud className="mx-auto w-12 h-12 text-gold-400 mb-3" />
+            <p className="text-brown-700 font-medium">
+              {isDragActive
+                ? "Drop images here..."
+                : "Drop images here or click to browse"}
+            </p>
+            <p className="text-sm text-brown-500 mt-1.5">
+              Accepts JPEG, PNG, WEBP (Max 10 images)
+            </p>
+            <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 bg-gold-100/70 text-gold-800 rounded-full text-[11px] font-medium border border-gold-200">
+              <Sparkles className="w-3 h-3 text-gold-600" />
+              <span>Smart Compression Active: 10MB photos auto-reduced to ~100KB</span>
+            </div>
+            <p className="text-xs text-brown-400 mt-2">
+              {totalImages} / 10 selected
+            </p>
+          </>
+        )}
       </div>
 
       {(images.length > 0 || existingImages.length > 0) && (

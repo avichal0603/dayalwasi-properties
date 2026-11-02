@@ -213,15 +213,18 @@ export default function AIChatbot() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div 
+      className="fixed right-5 sm:right-7 z-50 flex flex-col items-end pointer-events-none"
+      style={{ bottom: 'max(2.5rem, calc(2rem + env(safe-area-inset-bottom, 0px)))' }}
+    >
       {isOpen && (
-        <div className="chat-panel mb-4 w-[350px] sm:w-[400px] h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-scale-in origin-bottom-right border border-gold-200">
-          <div className="bg-gradient-to-r from-gold-500 to-gold-600 p-4 flex justify-between items-center text-white">
+        <div className="chat-panel mb-4 w-[92vw] max-w-[390px] h-[520px] max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-scale-in origin-bottom-right border border-gold-200/80 pointer-events-auto">
+          <div className="bg-gradient-to-r from-gold-500 to-gold-600 p-4 flex justify-between items-center text-white shadow-sm">
             <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5" />
-              <span className="font-display font-semibold">Dayalwasi AI</span>
+              <MessageCircle className="w-5 h-5 text-white" />
+              <span className="font-display font-semibold tracking-wide">Dayalwasi AI</span>
             </div>
-            <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1 rounded-full transition-colors">
+            <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1.5 rounded-full transition-colors">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -229,26 +232,26 @@ export default function AIChatbot() {
           <div className="flex-1 p-4 overflow-y-auto bg-beige-50 flex flex-col gap-4">
             {messages.map((msg) => (
               <div key={msg.id} className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'} animate-slide-up-fade`}>
-                <div className={`max-w-[85%] rounded-2xl p-3 ${
+                <div className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
                   msg.sender === 'user' 
                     ? 'bg-gradient-to-r from-gold-500 to-gold-600 text-white rounded-br-none' 
-                    : 'bg-beige-100 text-brown-900 border border-beige-200 rounded-bl-none'
+                    : 'bg-white text-brown-900 border border-beige-200 rounded-bl-none'
                 }`}>
-                  <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
                 </div>
                 
                 {msg.results && msg.results.length > 0 && (
-                  <div className="mt-2 flex flex-col gap-2 w-[90%]">
+                  <div className="mt-2 flex flex-col gap-2 w-[92%]">
                     {msg.results.map(prop => (
-                      <Link key={prop.id} href={`/properties/${prop.id}`} className="premium-card p-3 rounded-xl border border-gold-100 bg-white hover:border-gold-300 transition-colors block">
+                      <Link key={prop.id} href={`/properties/${prop.id}`} className="premium-card p-3 rounded-xl border border-gold-200/60 bg-white hover:border-gold-400 transition-colors block shadow-sm">
                         <div className="font-semibold text-brown-900 text-sm mb-1 truncate">{prop.title}</div>
                         <div className="flex items-center text-xs text-brown-600 mb-2">
-                          <MapPin className="w-3 h-3 mr-1" />
+                          <MapPin className="w-3 h-3 mr-1 text-gold-600" />
                           <span className="truncate">{prop.colony}</span>
                         </div>
                         <div className="flex justify-between items-center text-sm">
                           <span className="font-bold text-gold-700">{formatPrice(prop.price)}</span>
-                          <span className="text-brown-600 text-xs">{prop.area_gaj} sq yd</span>
+                          <span className="text-brown-600 text-xs font-medium">{prop.area_gaj} गज</span>
                         </div>
                       </Link>
                     ))}
@@ -259,10 +262,10 @@ export default function AIChatbot() {
             
             {isTyping && (
               <div className="flex items-start animate-fade-in">
-                <div className="bg-beige-100 border border-beige-200 rounded-2xl rounded-bl-none p-3 flex gap-1">
-                  <span className="w-2 h-2 bg-gold-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-2 h-2 bg-gold-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-2 h-2 bg-gold-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div className="bg-white border border-beige-200 rounded-2xl rounded-bl-none p-3 flex gap-1 shadow-sm">
+                  <span className="w-2 h-2 bg-gold-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-gold-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-gold-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                 </div>
               </div>
             )}
@@ -275,7 +278,7 @@ export default function AIChatbot() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask about properties..."
+              placeholder="Ask about properties in Dayalbagh..."
               className="input-field flex-1 !py-2 !px-4 text-sm"
             />
             <button
@@ -291,7 +294,8 @@ export default function AIChatbot() {
 
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fab w-14 h-14 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full shadow-lg flex items-center justify-center text-white hover:scale-110 transition-transform duration-300"
+        aria-label="Toggle Dayalwasi AI"
+        className="pointer-events-auto fab w-14 h-14 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-gold-400/30 hover:ring-gold-400/60"
       >
         {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
       </button>

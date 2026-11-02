@@ -2,8 +2,9 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { LayoutDashboard, Building2, Plus, Map as MapIcon, Users, LogOut, X } from 'lucide-react';
+import { LayoutDashboard, Building2, Plus, Map as MapIcon, Users, LogOut, X, FolderOpen, ExternalLink } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { GOOGLE_DRIVE_FOLDER_URL } from '@/lib/constants';
 
 interface SidebarProps {
   currentPath: string;
@@ -69,6 +70,20 @@ export function Sidebar({ currentPath, onLogout, isOpen, onClose }: SidebarProps
               </Link>
             );
           })}
+
+          <a
+            href={GOOGLE_DRIVE_FOLDER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClose}
+            className="nav-link flex items-center justify-between px-4 py-3 rounded-lg transition-colors text-gold-300/90 hover:bg-white/10 hover:text-gold-200 border border-gold-400/20 mt-4 bg-white/5"
+          >
+            <div className="flex items-center gap-3">
+              <FolderOpen size={20} className="text-gold-400" />
+              <span className="font-medium">Drive Storage</span>
+            </div>
+            <ExternalLink size={15} className="text-gold-400/70" />
+          </a>
         </nav>
 
         {/* Bottom */}

@@ -16,6 +16,7 @@ import {
   REGISTRY_LABELS,
   FACING_LABELS,
   formatPriceINR,
+  GOOGLE_DRIVE_FOLDER_URL
 } from "@/lib/constants";
 import { gajToSqft, calcPricePerGaj, generateShareText } from "@/lib/utils";
 import {
@@ -29,7 +30,9 @@ import {
   Share2,
   Map,
   Home,
-  Info
+  Info,
+  FolderOpen,
+  ExternalLink
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -124,6 +127,15 @@ export default function PropertyDetailPage() {
             Back to Properties
           </Link>
           <div className="flex items-center gap-3">
+            <a
+              href={property.drive_url || GOOGLE_DRIVE_FOLDER_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-outline flex items-center bg-white text-gold-700 hover:text-gold-900 border-gold-300"
+            >
+              <FolderOpen className="w-4 h-4 mr-2 text-gold-600" />
+              Drive Media
+            </a>
             <button onClick={handleShare} className="btn-outline flex items-center bg-white">
               <Share2 className="w-4 h-4 mr-2" />
               Share
@@ -301,6 +313,27 @@ export default function PropertyDetailPage() {
                 </div>
               </section>
             )}
+
+            {/* Google Drive Media Section */}
+            <section className="glass-card p-6 border-gold-200/80 bg-gradient-to-br from-white to-amber-50/40 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <FolderOpen className="w-5 h-5 text-gold-600" />
+                <h2 className="text-lg font-display font-bold text-brown-900">Google Drive Media</h2>
+              </div>
+              <p className="text-xs text-brown-600 mb-4 leading-relaxed">
+                Access full 4K walkthrough videos, high-resolution original photos, legal deeds and documents in Google Drive.
+              </p>
+              <a
+                href={property.drive_url || GOOGLE_DRIVE_FOLDER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-gold w-full flex items-center justify-center gap-2 py-2.5 text-xs font-semibold shadow-sm"
+              >
+                <FolderOpen className="w-4 h-4" />
+                <span>Open Drive Archive</span>
+                <ExternalLink className="w-3.5 h-3.5 opacity-80" />
+              </a>
+            </section>
 
             {/* Location Details */}
             <section className="glass-card p-6">

@@ -5,14 +5,41 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { useContacts } from '@/hooks/useContacts';
 import { Contact, ContactRole } from '@/lib/types';
 import { CONTACT_ROLE_LABELS, CONTACT_ROLE_COLORS } from '@/lib/constants';
-import { Users, Phone, Building2, Mail, MapPin, Plus, Edit2, Trash2, Search, X } from 'lucide-react';
+import { Users, Phone, Building2, Mail, MapPin, Plus, Edit2, Trash2, Search, X, Copy, Check, Database, RefreshCw, ExternalLink } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cn } from '@/lib/utils';
 
+const CONTACTS_SETUP_SQL = `-- Run this in your Supabase SQL Editor:
+-- https://supabase.com/dashboard/project/auhjqameqeasaphxxlqq/sql
+
+CREATE TABLE IF NOT EXISTS contacts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  alternate_phone TEXT,
+  role TEXT NOT NULL DEFAULT 'broker' CHECK (role IN ('broker', 'builder', 'lawyer', 'banker', 'government', 'client', 'other')),
+  company TEXT,
+  email TEXT,
+  address TEXT,
+  notes TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_contacts_role ON contacts (role);
+CREATE INDEX IF NOT EXISTS idx_contacts_name ON contacts (name);
+
+ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow all" ON contacts;
+CREATE POLICY "Allow all" ON contacts FOR ALL USING (true) WITH CHECK (true);
+`;
+
 export default function ContactsPage() {
-  const { contacts, loading, fetchContacts, createContact, updateContact, deleteContact } = useContacts();
+  const { contacts, loading, isCloudReady, fetchContacts, createContact, updateContact, deleteContact, syncToCloud } = useContacts();
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState<ContactRole | 'all'>('all');
+  const [copiedSql, setCopiedSql] = useState(false);
+  const [showSqlDetails, setShowSqlDetails] = useState(false);
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
@@ -112,6 +139,62 @@ export default function ContactsPage() {
             Add Contact
           </button>
         </div>
+
+        {/* Cloud Setup Notice (Only shown if Supabase contacts table is not yet detected) */}
+        {isCloudReady === false && (
+          <div className="mb-6 p-4 sm:p-5 rounded-2xl bg-amber-50/90 border border-amber-200/80 shadow-sm text-amber-950">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <Database className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-sm text-amber-900">
+                    Local Storage Active (Cloud Sync Setup Available)
+                  </h4>
+                  <p className="text-xs text-amber-800/90 mt-0.5">
+                    Your contacts are currently saved safely in your browser. To sync them to your Supabase cloud across all devices, run the setup SQL in your Supabase SQL Editor.
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(CONTACTS_SETUP_SQL);
+                    setCopiedSql(true);
+                    toast.success('SQL copied to clipboard!');
+                    setTimeout(() => setCopiedSql(false), 2500);
+                  }}
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 flex items-center gap-1.5 transition-colors shadow-sm"
+                >
+                  {copiedSql ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5 text-amber-700" />}
+                  {copiedSql ? 'Copied SQL' : 'Copy 1-Click SQL'}
+                </button>
+                <a
+                  href="https://supabase.com/dashboard/project/auhjqameqeasaphxxlqq/sql"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-600 text-white hover:bg-amber-700 flex items-center gap-1.5 transition-colors shadow-sm"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Open SQL Editor
+                </a>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const ok = await syncToCloud();
+                    if (ok) fetchContacts();
+                  }}
+                  disabled={loading}
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 flex items-center gap-1.5 transition-colors shadow-sm"
+                  title="Retry cloud connection"
+                >
+                  <RefreshCw className={cn("w-3.5 h-3.5", loading && "animate-spin")} />
+                  Sync
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-sm border border-gold-200/50 mb-8 flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">

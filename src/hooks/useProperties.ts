@@ -7,7 +7,25 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, uploadImage, deleteImage, getImageUrl } from '@/lib/supabase';
 import { calcPricePerGaj, gajToSqft } from '@/lib/utils';
+import { compressImages } from '@/lib/imageCompression';
 import type { Property, PropertyFormData } from '@/lib/types';
+
+function parseProperty(p: any): Property {
+  let drive_url = p.drive_url || null;
+  let notes = p.notes;
+  if (!drive_url && notes) {
+    const match = notes.match(/\[Drive:\s*(https?:\/\/[^\]]+)\]/i);
+    if (match) {
+      drive_url = match[1].trim();
+      notes = notes.replace(/\[Drive:\s*(https?:\/\/[^\]]+)\]/i, '').trim();
+    }
+  }
+  return {
+    ...p,
+    drive_url,
+    notes,
+  };
+}
 
 export function useProperties() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -24,7 +42,8 @@ export function useProperties() {
         .order('created_at', { ascending: false });
 
       if (fetchError) throw fetchError;
-      setProperties(data || []);
+      const parsed = (data || []).map(parseProperty);
+      setProperties(parsed);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch properties');
     } finally {
@@ -43,11 +62,11 @@ export function useProperties() {
       .eq('id', id)
       .single();
 
-    if (error) {
+    if (error || !data) {
       console.error('Fetch property error:', error);
       return null;
     }
-    return data;
+    return parseProperty(data);
   }, []);
 
   const createProperty = useCallback(
@@ -55,27 +74,49 @@ export function useProperties() {
       const area_sqft = gajToSqft(formData.area_gaj);
       const price_per_gaj = calcPricePerGaj(formData.price, formData.area_gaj);
 
+      // Embed drive_url in notes as robust fallback if column is not yet migrated in Supabase
+      let notes = formData.notes || '';
+      if (formData.drive_url) {
+        notes = `${notes}\n[Drive: ${formData.drive_url}]`.trim();
+      }
+
+      const insertPayload: Record<string, any> = {
+        ...formData,
+        notes,
+        area_sqft,
+        price_per_gaj,
+        images: [],
+      };
+
       // First create the property to get an ID
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('properties')
-        .insert({
-          ...formData,
-          area_sqft,
-          price_per_gaj,
-          images: [],
-        })
+        .insert(insertPayload)
         .select()
         .single();
+
+      // If drive_url column does not exist yet in Supabase, retry without it
+      if (error && (error.code === '42703' || error.message?.includes('drive_url'))) {
+        delete insertPayload.drive_url;
+        const retry = await supabase
+          .from('properties')
+          .insert(insertPayload)
+          .select()
+          .single();
+        data = retry.data;
+        error = retry.error;
+      }
 
       if (error || !data) {
         console.error('Create error:', error);
         return null;
       }
 
-      // Upload images
+      // Auto-compress and upload images
       if (imageFiles.length > 0) {
+        const compressedFiles = await compressImages(imageFiles);
         const imagePaths: string[] = [];
-        for (const file of imageFiles) {
+        for (const file of compressedFiles) {
           const path = await uploadImage(file, data.id);
           if (path) imagePaths.push(path);
         }
@@ -90,14 +131,16 @@ export function useProperties() {
             .single();
 
           if (updated) {
-            setProperties((prev) => [updated, ...prev]);
-            return updated;
+            const parsedUpdated = parseProperty(updated);
+            setProperties((prev) => [parsedUpdated, ...prev]);
+            return parsedUpdated;
           }
         }
       }
 
-      setProperties((prev) => [data, ...prev]);
-      return data;
+      const parsedData = parseProperty(data);
+      setProperties((prev) => [parsedData, ...prev]);
+      return parsedData;
     },
     []
   );
@@ -116,10 +159,11 @@ export function useProperties() {
         }
       }
 
-      // Handle new image uploads
+      // Auto-compress and upload new images
       let newImagePaths: string[] = [];
       if (newImageFiles && newImageFiles.length > 0) {
-        for (const file of newImageFiles) {
+        const compressedFiles = await compressImages(newImageFiles);
+        for (const file of compressedFiles) {
           const path = await uploadImage(file, id);
           if (path) newImagePaths.push(path);
         }
@@ -131,7 +175,12 @@ export function useProperties() {
         ? current.images.filter((img) => !removedImages?.includes(img))
         : [];
 
-      const updateData: Record<string, unknown> = { ...formData };
+      let notes = formData.notes ?? current?.notes ?? '';
+      if (formData.drive_url) {
+        notes = `${notes}\n[Drive: ${formData.drive_url}]`.trim();
+      }
+
+      const updateData: Record<string, any> = { ...formData, notes };
       if (formData.area_gaj) {
         updateData.area_sqft = gajToSqft(formData.area_gaj);
       }
@@ -142,20 +191,33 @@ export function useProperties() {
         updateData.images = [...existingImages, ...newImagePaths];
       }
 
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('properties')
         .update(updateData)
         .eq('id', id)
         .select()
         .single();
 
+      if (error && (error.code === '42703' || error.message?.includes('drive_url'))) {
+        delete updateData.drive_url;
+        const retry = await supabase
+          .from('properties')
+          .update(updateData)
+          .eq('id', id)
+          .select()
+          .single();
+        data = retry.data;
+        error = retry.error;
+      }
+
       if (error || !data) {
         console.error('Update error:', error);
         return null;
       }
 
-      setProperties((prev) => prev.map((p) => (p.id === id ? data : p)));
-      return data;
+      const parsedData = parseProperty(data);
+      setProperties((prev) => prev.map((p) => (p.id === id ? parsedData : p)));
+      return parsedData;
     },
     [properties]
   );

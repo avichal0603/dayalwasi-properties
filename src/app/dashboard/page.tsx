@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { StatCard } from '@/components/ui/StatCard';
 import { useProperties } from '@/hooks/useProperties';
-import { formatPriceINR, formatArea, AVAILABILITY_LABELS, AVAILABILITY_COLORS } from '@/lib/constants';
-import { Building2, CheckCircle, XCircle, IndianRupee, Map as MapIcon, Plus, ChevronRight } from 'lucide-react';
+import { formatPriceINR, formatArea, AVAILABILITY_LABELS, AVAILABILITY_COLORS, GOOGLE_DRIVE_FOLDER_URL } from '@/lib/constants';
+import { Building2, CheckCircle, XCircle, IndianRupee, Map as MapIcon, Plus, ChevronRight, FolderOpen, ExternalLink, Cloud } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 function formatDate(date: Date): string {
@@ -70,9 +70,21 @@ export default function DashboardPage() {
     <DashboardLayout title="Overview" onSearch={setSearchQuery}>
       <div className="space-y-8 pb-8">
         {/* Welcome Section */}
-        <div className="animate-fade-in pt-4">
-          <h2 className="section-title">Welcome back</h2>
-          <p className="text-brown-500 mt-1">{today}</p>
+        <div className="animate-fade-in pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="section-title">Welcome back</h2>
+            <p className="text-brown-500 mt-1">{today}</p>
+          </div>
+          <a
+            href={GOOGLE_DRIVE_FOLDER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 self-start sm:self-auto px-4 py-2 rounded-xl bg-white/90 border border-gold-300 text-brown-800 hover:text-gold-700 hover:border-gold-500 shadow-sm transition-all text-xs font-semibold group"
+          >
+            <FolderOpen className="w-4 h-4 text-gold-600 group-hover:scale-110 transition-transform" />
+            <span>Open Google Drive (HD Photos & Videos)</span>
+            <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gold-600" />
+          </a>
         </div>
 
         {/* Stats Grid */}
@@ -217,6 +229,24 @@ export default function DashboardPage() {
                   <p className="text-xs text-brown-500">See all properties visually</p>
                 </div>
               </Link>
+
+              <a 
+                href={GOOGLE_DRIVE_FOLDER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass-card p-5 flex items-center gap-4 hover:border-gold-400 hover:shadow-md transition-all group cursor-pointer border-gold-200/60 bg-gradient-to-r from-white to-amber-50/30"
+              >
+                <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                  <FolderOpen size={20} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <h4 className="font-semibold text-brown-900 truncate">Google Drive Media</h4>
+                    <ExternalLink size={14} className="text-brown-400 group-hover:text-amber-600" />
+                  </div>
+                  <p className="text-xs text-brown-500 truncate">4K Videos, RAW Photos & Docs</p>
+                </div>
+              </a>
             </div>
           </div>
         </div>

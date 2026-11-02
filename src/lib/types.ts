@@ -30,6 +30,7 @@ export interface Property {
   owner_name: string;
   owner_contact: string;
   notes: string | null;
+  drive_url?: string | null;
   latitude: number | null;
   longitude: number | null;
   images: string[];
@@ -80,6 +81,7 @@ export interface PropertyFormData {
   owner_name: string;
   owner_contact: string;
   notes: string | null;
+  drive_url?: string | null;
   latitude: number | null;
   longitude: number | null;
 }

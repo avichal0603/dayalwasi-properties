@@ -13,10 +13,12 @@ import {
   DEFAULT_CITY,
   formatPriceINR,
   DEFAULT_CENTER,
-  DEFAULT_ZOOM
+  DEFAULT_ZOOM,
+  GOOGLE_DRIVE_FOLDER_URL
 } from "@/lib/constants";
 import { gajToSqft, calcPricePerGaj } from "@/lib/utils";
 import PropertyMap from "../map/PropertyMap";
+import { FolderOpen } from "lucide-react";
 
 interface PropertyFormProps {
   initialData?: Partial<PropertyFormData>;
@@ -55,6 +57,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
     parking: false,
     owner_name: "",
     owner_contact: "",
+    drive_url: "",
     notes: "",
     ...initialData,
   });
@@ -303,7 +306,39 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
         </div>
       </div>
 
-      {/* Section 8: Notes */}
+      {/* Section 8: Google Drive Media */}
+      <div className="glass-card p-6 slide-up-fade" style={{ animationDelay: "650ms" }}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+          <h2 className="section-title">Google Drive Archive (HD Videos & Photos)</h2>
+          <button
+            type="button"
+            onClick={() => setFormData(prev => ({ ...prev, drive_url: GOOGLE_DRIVE_FOLDER_URL }))}
+            className="text-xs font-semibold text-gold-700 hover:text-gold-900 bg-gold-50 hover:bg-gold-100 border border-gold-300 rounded-lg px-2.5 py-1 transition-colors self-start sm:self-auto flex items-center gap-1.5 shadow-sm"
+          >
+            <FolderOpen className="w-3.5 h-3.5 text-gold-600" />
+            Use Dayalwasi Main Drive Folder
+          </button>
+        </div>
+        <p className="text-xs text-brown-500 mb-4">
+          Save heavy 4K walk-through videos and complete 50+ RAW photo albums in Google Drive. Dayalwasi keeps fast compressed previews in Supabase so everything is instant, and links to your Drive for high-res files!
+        </p>
+        <div>
+          <Label>Drive Folder or Video URL</Label>
+          <div className="relative">
+            <input
+              type="url"
+              name="drive_url"
+              value={formData.drive_url || ""}
+              onChange={handleChange}
+              className="input-field pl-10"
+              placeholder="https://drive.google.com/drive/folders/..."
+            />
+            <FolderOpen className="w-4 h-4 text-brown-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+
+      {/* Section 9: Notes */}
       <div className="glass-card p-6 slide-up-fade" style={{ animationDelay: "700ms" }}>
         <h2 className="section-title">Additional Notes</h2>
         <div className="mt-4">

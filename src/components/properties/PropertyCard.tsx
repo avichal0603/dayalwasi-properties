@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Property } from "@/lib/types";
-import { Building2, MapPin, Ruler, Compass } from "lucide-react";
+import { Building2, MapPin, Ruler, Compass, FolderOpen } from "lucide-react";
 import {
   AVAILABILITY_LABELS,
   AVAILABILITY_COLORS,
@@ -44,6 +44,13 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
             )}
           >
             {AVAILABILITY_LABELS[property.availability as keyof typeof AVAILABILITY_LABELS] || property.availability}
+          </div>
+        )}
+
+        {property.drive_url && (
+          <div className="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-semibold rounded-full shadow-sm bg-white/95 text-amber-800 border border-amber-300 flex items-center gap-1 backdrop-blur-sm">
+            <FolderOpen className="w-3 h-3 text-amber-600" />
+            <span>Drive Media</span>
           </div>
         )}
       </div>

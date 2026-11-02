@@ -117,6 +117,10 @@ export const DAYALBAGH_COLONIES = [
 ];
 
 // --- Defaults ---
+// --- Google Drive Archive Link ---
+export const GOOGLE_DRIVE_FOLDER_URL =
+  'https://drive.google.com/drive/folders/1iSQBJFX4xNGFJ24RajPjZju80AlSLvlO?usp=sharing';
+
 export const DEFAULT_CITY = 'Agra';
 export const DEFAULT_CENTER = { lat: 27.2244, lng: 78.0120 }; // Dayalbagh, Agra
 export const DEFAULT_ZOOM = 14;
