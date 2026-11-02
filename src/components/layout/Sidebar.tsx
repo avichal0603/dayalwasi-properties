@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { LayoutDashboard, Building2, Plus, Map as MapIcon, Users, LogOut, X, FolderOpen, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, Building2, Plus, Map as MapIcon, Users, LogOut, X, FolderOpen, ExternalLink, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GOOGLE_DRIVE_FOLDER_URL } from '@/lib/constants';
 
@@ -19,6 +19,7 @@ const navItems = [
   { name: 'Add Property', href: '/properties/add', icon: Plus },
   { name: 'Map View', href: '/map', icon: MapIcon },
   { name: 'Contacts', href: '/contacts', icon: Users },
+  { name: 'Admin & PIN', href: '/admin', icon: ShieldCheck },
 ];
 
 export function Sidebar({ currentPath, onLogout, isOpen, onClose }: SidebarProps) {

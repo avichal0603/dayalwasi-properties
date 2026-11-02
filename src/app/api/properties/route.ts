@@ -6,6 +6,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from('properties')
       .select('*')
+      .neq('colony', '__system__')
       .order('created_at', { ascending: false });
 
     if (error) {
