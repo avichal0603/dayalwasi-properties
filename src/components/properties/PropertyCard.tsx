@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { Property } from "@/lib/types";
 import { Building2, MapPin, Ruler, Compass, FolderOpen } from "lucide-react";
@@ -17,6 +18,7 @@ interface PropertyCardProps {
 }
 
 export function PropertyCard({ property, onClick }: PropertyCardProps) {
+  const [imgError, setImgError] = useState(false);
   const firstImage = property.images && property.images.length > 0 ? property.images[0] : null;
 
   return (
@@ -25,12 +27,13 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
       className="premium-card gold-glow cursor-pointer flex flex-col group h-full btn-press"
     >
       <div className="relative w-full aspect-[4/3] rounded-t-2xl overflow-hidden bg-gradient-to-br from-beige-100 to-beige-200 flex items-center justify-center">
-        {firstImage ? (
+        {firstImage && !imgError ? (
           <Image
             src={firstImage}
             alt={property.title || "Property Image"}
             fill
             className="object-cover card-image"
+            onError={() => setImgError(true)}
           />
         ) : (
           <Building2 className="w-12 h-12 text-gold-300" />
