@@ -71,41 +71,28 @@ export function useProperties() {
 
   const createProperty = useCallback(
     async (formData: PropertyFormData, imageFiles: File[]): Promise<Property | null> => {
-      const area_sqft = gajToSqft(formData.area_gaj);
-      const price_per_gaj = calcPricePerGaj(formData.price, formData.area_gaj);
-
-      // Embed drive_url in notes as robust fallback if column is not yet migrated in Supabase
+      // Embed drive_url in notes as robust fallback so no database migration is required
       let notes = formData.notes || '';
       if (formData.drive_url) {
         notes = `${notes}\n[Drive: ${formData.drive_url}]`.trim();
       }
 
+      // Extract safe payload: OMIT generated columns (area_sqft, price_per_gaj) and drive_url
+      const { drive_url, ...restData } = formData as any;
       const insertPayload: Record<string, any> = {
-        ...formData,
+        ...restData,
         notes,
-        area_sqft,
-        price_per_gaj,
         images: [],
       };
+      delete insertPayload.area_sqft;
+      delete insertPayload.price_per_gaj;
 
-      // First create the property to get an ID
-      let { data, error } = await supabase
+      // Create property record in Supabase
+      const { data, error } = await supabase
         .from('properties')
         .insert(insertPayload)
         .select()
         .single();
-
-      // If drive_url column does not exist yet in Supabase, retry without it
-      if (error && (error.code === '42703' || error.message?.includes('drive_url'))) {
-        delete insertPayload.drive_url;
-        const retry = await supabase
-          .from('properties')
-          .insert(insertPayload)
-          .select()
-          .single();
-        data = retry.data;
-        error = retry.error;
-      }
 
       if (error || !data) {
         console.error('Create error:', error);
@@ -114,27 +101,31 @@ export function useProperties() {
 
       // Auto-compress and upload images
       if (imageFiles.length > 0) {
-        const compressedFiles = await compressImages(imageFiles);
-        const imagePaths: string[] = [];
-        for (const file of compressedFiles) {
-          const path = await uploadImage(file, data.id);
-          if (path) imagePaths.push(path);
-        }
-
-        // Update property with image paths
-        if (imagePaths.length > 0) {
-          const { data: updated } = await supabase
-            .from('properties')
-            .update({ images: imagePaths })
-            .eq('id', data.id)
-            .select()
-            .single();
-
-          if (updated) {
-            const parsedUpdated = parseProperty(updated);
-            setProperties((prev) => [parsedUpdated, ...prev]);
-            return parsedUpdated;
+        try {
+          const compressedFiles = await compressImages(imageFiles);
+          const imagePaths: string[] = [];
+          for (const file of compressedFiles) {
+            const path = await uploadImage(file, data.id);
+            if (path) imagePaths.push(path);
           }
+
+          // Update property with image paths
+          if (imagePaths.length > 0) {
+            const { data: updated } = await supabase
+              .from('properties')
+              .update({ images: imagePaths })
+              .eq('id', data.id)
+              .select()
+              .single();
+
+            if (updated) {
+              const parsedUpdated = parseProperty(updated);
+              setProperties((prev) => [parsedUpdated, ...prev]);
+              return parsedUpdated;
+            }
+          }
+        } catch (uploadErr) {
+          console.error('Image upload failed, property saved:', uploadErr);
         }
       }
 
@@ -162,10 +153,14 @@ export function useProperties() {
       // Auto-compress and upload new images
       let newImagePaths: string[] = [];
       if (newImageFiles && newImageFiles.length > 0) {
-        const compressedFiles = await compressImages(newImageFiles);
-        for (const file of compressedFiles) {
-          const path = await uploadImage(file, id);
-          if (path) newImagePaths.push(path);
+        try {
+          const compressedFiles = await compressImages(newImageFiles);
+          for (const file of compressedFiles) {
+            const path = await uploadImage(file, id);
+            if (path) newImagePaths.push(path);
+          }
+        } catch (uploadErr) {
+          console.error('New image upload failed:', uploadErr);
         }
       }
 
@@ -180,35 +175,23 @@ export function useProperties() {
         notes = `${notes}\n[Drive: ${formData.drive_url}]`.trim();
       }
 
-      const updateData: Record<string, any> = { ...formData, notes };
-      if (formData.area_gaj) {
-        updateData.area_sqft = gajToSqft(formData.area_gaj);
-      }
-      if (formData.price && formData.area_gaj) {
-        updateData.price_per_gaj = calcPricePerGaj(formData.price, formData.area_gaj);
-      }
+      const { drive_url, ...restFormData } = formData as any;
+      const updateData: Record<string, any> = { ...restFormData, notes };
+      
+      // Never send generated columns
+      delete updateData.area_sqft;
+      delete updateData.price_per_gaj;
+
       if (newImageFiles || removedImages) {
         updateData.images = [...existingImages, ...newImagePaths];
       }
 
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from('properties')
         .update(updateData)
         .eq('id', id)
         .select()
         .single();
-
-      if (error && (error.code === '42703' || error.message?.includes('drive_url'))) {
-        delete updateData.drive_url;
-        const retry = await supabase
-          .from('properties')
-          .update(updateData)
-          .eq('id', id)
-          .select()
-          .single();
-        data = retry.data;
-        error = retry.error;
-      }
 
       if (error || !data) {
         console.error('Update error:', error);

@@ -26,11 +26,12 @@ export default function AddPropertyPage() {
         toast.success("Property created successfully");
         router.push(`/properties/${newProperty.id}`);
       } else {
-        toast.error("Failed to create property");
+        toast.error("Failed to create property. Please check required fields.");
+        setIsSubmitting(false);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to create property");
+    } catch (error: any) {
+      console.error('Error creating property:', error);
+      toast.error(error?.message || "Failed to create property");
       setIsSubmitting(false);
     }
   };
