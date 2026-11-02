@@ -39,13 +39,28 @@ export function Sidebar({ currentPath, onLogout, isOpen, onClose }: SidebarProps
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Logo Area */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-white/10 shrink-0">
-          <div>
-            <h1 className="text-2xl font-display font-bold text-gold-400">Dayalwasi</h1>
-            <p className="text-xs text-beige-200 uppercase tracking-widest">Properties</p>
+        <div className="h-20 flex items-center justify-between px-6 border-b border-white/10 shrink-0 bg-black/15">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-300 via-gold-500 to-amber-700 p-0.5 shadow-gold shrink-0">
+              <div className="w-full h-full bg-brown-950 rounded-[10px] flex items-center justify-center">
+                <span className="font-display text-lg font-bold text-gold-300">D</span>
+              </div>
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl font-display font-bold tracking-tight text-gold-metallic drop-shadow-sm">
+                Dayalwasi
+              </h1>
+              <div className="flex items-center gap-1.5">
+                <p className="text-[10px] text-gold-200/90 tracking-[0.2em] font-semibold uppercase">
+                  Properties
+                </p>
+                <span className="w-1 h-1 rounded-full bg-olive-400 shrink-0"></span>
+                <span className="text-[9px] text-beige-200/80 font-sans tracking-wider uppercase">Dayalbagh</span>
+              </div>
+            </div>
           </div>
-          <button onClick={onClose} className="lg:hidden text-beige-200 hover:text-white">
-            <X size={24} />
+          <button onClick={onClose} className="lg:hidden text-beige-200 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+            <X size={20} />
           </button>
         </div>
 
@@ -87,7 +102,7 @@ export function Sidebar({ currentPath, onLogout, isOpen, onClose }: SidebarProps
         </nav>
 
         {/* Bottom */}
-        <div className="p-4 border-t border-white/10 shrink-0">
+        <div className="p-4 border-t border-white/10 shrink-0 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
           <button
             onClick={onLogout}
             className="flex items-center gap-3 px-4 py-3 w-full text-left text-beige-100 hover:bg-white/5 hover:text-white rounded-lg transition-colors"

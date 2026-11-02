@@ -68,50 +68,50 @@ export default function DashboardPage() {
 
   return (
     <DashboardLayout title="Overview" onSearch={setSearchQuery}>
-      <div className="space-y-8 pb-8">
+      <div className="page-container space-y-6 sm:space-y-8 pb-12">
         {/* Welcome Section */}
-        <div className="animate-fade-in pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="animate-fade-in pt-1 sm:pt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="section-title">Welcome back</h2>
-            <p className="text-brown-500 mt-1">{today}</p>
+            <p className="text-brown-500 text-xs sm:text-sm mt-0.5">{today}</p>
           </div>
           <a
             href={GOOGLE_DRIVE_FOLDER_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 self-start sm:self-auto px-4 py-2 rounded-xl bg-white/90 border border-gold-300 text-brown-800 hover:text-gold-700 hover:border-gold-500 shadow-sm transition-all text-xs font-semibold group"
+            className="inline-flex items-center gap-2 self-start sm:self-auto px-4 py-2.5 rounded-xl bg-white border border-gold-300/80 text-brown-800 hover:text-gold-700 hover:border-gold-500 shadow-sm transition-all text-xs font-semibold group"
           >
             <FolderOpen className="w-4 h-4 text-gold-600 group-hover:scale-110 transition-transform" />
-            <span>Open Google Drive (HD Photos & Videos)</span>
+            <span>Open Google Drive Media</span>
             <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gold-600" />
           </a>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Stats Grid - 2x2 on Mobile (iPhone 16 Pro Max), 4 across on MacBook Air */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
           <StatCard 
             icon={Building2} 
             label="Total Properties" 
             value={loading ? '...' : stats.total} 
-            color="text-blue-600 bg-blue-100"
+            color="text-brown-700 bg-brown-100/80"
           />
           <StatCard 
             icon={CheckCircle} 
             label="Available" 
             value={loading ? '...' : stats.available} 
-            color="text-green-600 bg-green-100"
+            color="text-olive-700 bg-olive-100"
           />
           <StatCard 
             icon={XCircle} 
             label="Sold" 
             value={loading ? '...' : stats.sold} 
-            color="text-red-600 bg-red-100"
+            color="text-amber-800 bg-amber-100"
           />
           <StatCard 
             icon={IndianRupee} 
-            label="Total Value (Available)" 
+            label="Total Value" 
             value={loading ? '...' : formatPriceINR(stats.value)} 
-            color="text-gold-600 bg-gold-100"
+            color="text-gold-700 bg-gold-100"
           />
         </div>
 

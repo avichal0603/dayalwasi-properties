@@ -48,10 +48,8 @@ export function DashboardLayout({ children, title = 'Dashboard', onSearch }: Das
           onMenuClick={() => setIsSidebarOpen(true)} 
           onSearch={onSearch}
         />
-        <main className="flex-1 overflow-y-auto">
-          <div className="page-container h-full">
-            {children}
-          </div>
+        <main className="flex-1 overflow-y-auto min-w-0 w-full relative">
+          {children}
         </main>
         {/* Global Floating AI Chatbot */}
         <AIChatbot />

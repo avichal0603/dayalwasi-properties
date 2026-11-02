@@ -1,32 +1,45 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ============================================ */
-/* Dayalwasi Properties — Global Styles         */
-/* Golden / Brown / Beige Luxury Theme          */
+/* Dayalwasi Properties — Global Luxury Styles  */
+/* Golden / Warm Cream / Deep Espresso / Olive  */
+/* Optimized for MacBook Air M1 & iPhone 16 Pro */
 /* ============================================ */
 
 @layer base {
-  * {
-    @apply border-beige-500;
+  *, *::before, *::after {
+    @apply border-beige-400;
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-beige-300 text-brown-800 font-sans antialiased;
+    @apply bg-beige-200 text-brown-900 font-sans antialiased;
+    background-image: 
+      radial-gradient(circle at 10% 20%, rgba(201, 168, 76, 0.03) 0%, transparent 20%),
+      radial-gradient(circle at 90% 80%, rgba(95, 117, 91, 0.02) 0%, transparent 20%);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display;
+    @apply font-display tracking-tight text-brown-900;
   }
 
   ::selection {
-    @apply bg-gold-200 text-brown-800;
+    @apply bg-gold-200 text-brown-900;
   }
 
-  /* Custom scrollbar */
+  /* Custom smooth scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -37,64 +50,63 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-beige-700 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-brown-400;
+    @apply bg-beige-500 rounded-full hover:bg-gold-500;
+    transition: background-color 0.2s;
   }
 }
 
 @layer components {
-  /* Glass card effect */
+  /* Fluid responsive luxury card */
   .glass-card {
-    @apply bg-white/80 backdrop-blur-sm border border-beige-400 rounded-2xl shadow-card;
+    @apply bg-white/90 backdrop-blur-md border border-beige-400/80 rounded-2xl shadow-card
+           min-w-0 break-words transition-all duration-300;
   }
 
   .glass-card:hover {
-    @apply shadow-card-hover;
+    @apply shadow-card-hover border-gold-300/60;
   }
 
-  /* Gold gradient button */
+  /* Gold gradient button with reflective metallic feel */
   .btn-gold {
-    @apply bg-gradient-gold text-white font-semibold px-6 py-2.5 rounded-xl
-           shadow-gold hover:shadow-gold-lg transition-all duration-300
-           hover:scale-[1.02] active:scale-[0.98];
+    @apply inline-flex items-center justify-center bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 text-white font-semibold 
+           px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-gold hover:shadow-gold-lg 
+           transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] min-h-[44px]
+           text-sm tracking-wide;
+  }
+
+  /* Olive accent luxury button */
+  .btn-olive {
+    @apply inline-flex items-center justify-center bg-olive-700 hover:bg-olive-800 text-white font-medium
+           px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-sm transition-all duration-300
+           hover:scale-[1.02] active:scale-[0.98] min-h-[44px] text-sm;
   }
 
   /* Brown solid button */
   .btn-brown {
-    @apply bg-brown-500 text-white font-medium px-6 py-2.5 rounded-xl
-           hover:bg-brown-600 transition-all duration-300
-           hover:scale-[1.02] active:scale-[0.98];
+    @apply inline-flex items-center justify-center bg-brown-700 text-white font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl
+           hover:bg-brown-800 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] min-h-[44px] text-sm;
   }
 
   /* Outline button */
   .btn-outline {
-    @apply border-2 border-gold-500 text-gold-600 font-medium px-6 py-2.5 rounded-xl
-           hover:bg-gold-50 transition-all duration-300;
+    @apply inline-flex items-center justify-center border border-gold-400/80 bg-white/80 backdrop-blur-sm text-brown-800 font-medium 
+           px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl hover:bg-gold-50 hover:border-gold-500 transition-all duration-200 min-h-[40px] text-xs sm:text-sm;
   }
 
-  /* Ghost button */
-  .btn-ghost {
-    @apply text-brown-500 font-medium px-4 py-2 rounded-xl
-           hover:bg-beige-300 transition-all duration-200;
-  }
-
-  /* Input styling */
+  /* Input styling: 16px on mobile prevents iOS Safari auto-zoom jump! */
   .input-field {
-    @apply w-full px-4 py-3 bg-beige-50 border border-beige-400 rounded-xl
-           text-brown-800 placeholder:text-beige-700
-           focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-gold-400
-           transition-all duration-200;
+    @apply w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-white border border-beige-400 rounded-xl
+           text-base sm:text-sm text-brown-900 placeholder:text-brown-400
+           focus:outline-none focus:ring-2 focus:ring-gold-400/80 focus:border-gold-400
+           transition-all duration-200 shadow-sm min-h-[44px];
   }
 
   /* Select styling */
   .select-field {
-    @apply w-full px-4 py-3 bg-beige-50 border border-beige-400 rounded-xl
-           text-brown-800 appearance-none cursor-pointer
-           focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-gold-400
-           transition-all duration-200;
+    @apply w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-white border border-beige-400 rounded-xl
+           text-base sm:text-sm text-brown-900 appearance-none cursor-pointer
+           focus:outline-none focus:ring-2 focus:ring-gold-400/80 focus:border-gold-400
+           transition-all duration-200 shadow-sm min-h-[44px];
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236B4226' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 1rem center;
@@ -102,37 +114,31 @@
 
   /* Status badges */
   .badge {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold tracking-wide uppercase;
+    @apply inline-flex items-center px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-[11px] font-semibold tracking-wide uppercase;
+  }
+
+  .badge-olive {
+    @apply bg-olive-100/90 text-olive-900 border border-olive-300/60;
   }
 
   /* Sidebar nav link */
   .nav-link {
-    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-beige-200
-           hover:bg-white/10 hover:text-white transition-all duration-200;
+    @apply flex items-center gap-3 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-beige-100
+           hover:bg-white/10 hover:text-white transition-all duration-200 text-sm font-medium;
   }
 
   .nav-link.active {
-    @apply bg-white/15 text-white font-semibold;
+    @apply bg-white/15 text-gold-300 font-semibold shadow-inner;
   }
 
-  /* Property card */
-  .property-card {
-    @apply glass-card overflow-hidden transition-all duration-300 hover:-translate-y-1 cursor-pointer;
-  }
-
-  /* Fade animations */
-  .animate-in {
-    @apply animate-fade-in;
-  }
-
-  /* Page container */
+  /* Page container: fluid responsive padding for 13" MacBook Air & iPhones */
   .page-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+    @apply max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full min-w-0;
   }
 
   /* Section title */
   .section-title {
-    @apply text-2xl font-display font-bold text-brown-800;
+    @apply text-xl sm:text-2xl font-display font-bold text-brown-900 tracking-tight;
   }
 
   /* Leaflet map overrides */
@@ -147,80 +153,50 @@
   }
 
   .leaflet-popup-content {
-    margin: 12px 16px !important;
+    margin: 10px 14px !important;
     font-family: 'Inter', sans-serif !important;
   }
 }
 
-@layer utilities {
-  .text-gradient-gold {
-    @apply bg-gradient-gold bg-clip-text text-transparent;
-  }
-}
-
 /* ============================================ */
-/* Premium Micro-Interactions & Polish          */
-/* Apple / Goldman Sachs level                  */
+/* Reflective Shaded Metallic & Micro-Interactions */
 /* ============================================ */
 
-/* Smooth scroll */
-html {
-  scroll-behavior: smooth;
+/* Shaded Reflective Metallic Gold text */
+.text-gold-metallic {
+  background: linear-gradient(135deg, #B8860B 0%, #F5DE88 28%, #FFF8E1 50%, #D4AF37 72%, #8C6414 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
 }
 
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* Shimmer skeleton loader */
+/* Shimmer animation */
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
-.skeleton {
-  background: linear-gradient(90deg, #F5F0E8 25%, #faf7f2 37%, #F5F0E8 63%);
+.shimmer-gold {
+  background: linear-gradient(90deg, rgba(201,168,76,0) 0%, rgba(255,243,209,0.4) 50%, rgba(201,168,76,0) 100%);
   background-size: 200% 100%;
-  animation: shimmer 1.6s ease infinite;
-  border-radius: 0.75rem;
+  animation: shimmer 2.5s infinite;
 }
 
-.skeleton-text {
-  @apply skeleton;
-  height: 1em;
-  border-radius: 0.25rem;
-}
-
-/* Stagger animation delays */
-.stagger-1 { animation-delay: 50ms; }
-.stagger-2 { animation-delay: 100ms; }
-.stagger-3 { animation-delay: 150ms; }
-.stagger-4 { animation-delay: 200ms; }
-.stagger-5 { animation-delay: 250ms; }
-.stagger-6 { animation-delay: 300ms; }
-
-/* Premium card hover — gold border glow */
+/* Premium card hover */
 @layer components {
   .premium-card {
-    @apply bg-white/80 backdrop-blur-sm border border-beige-400 rounded-2xl shadow-card
-           transition-all duration-500 ease-out;
+    @apply bg-white/95 backdrop-blur-sm border border-beige-400/80 rounded-2xl shadow-card
+           min-w-0 break-words transition-all duration-300 ease-out;
   }
 
   .premium-card:hover {
-    @apply -translate-y-1.5 shadow-card-hover;
-    border-color: rgba(201, 168, 76, 0.35);
+    @apply -translate-y-1 shadow-card-hover border-gold-400/60;
     box-shadow:
-      0 0 0 1px rgba(201, 168, 76, 0.1),
-      0 10px 30px -5px rgba(0, 0, 0, 0.08),
+      0 0 0 1px rgba(201, 168, 76, 0.15),
+      0 12px 28px -5px rgba(44, 30, 20, 0.08),
       0 0 20px rgba(201, 168, 76, 0.08);
   }
 
-  /* Image zoom on card hover */
   .premium-card .card-image {
     @apply transition-transform duration-700 ease-out;
   }
@@ -229,82 +205,20 @@ html {
     @apply scale-105;
   }
 
-  /* Button press effect */
   .btn-press {
     @apply transition-all duration-150 active:scale-95 active:shadow-none;
-  }
-
-  /* Gold glow effect */
-  .gold-glow {
-    @apply transition-all duration-500;
   }
 
   .gold-glow:hover {
     box-shadow: 0 0 25px rgba(201, 168, 76, 0.2), 0 0 50px rgba(201, 168, 76, 0.05);
   }
-
-  /* Focus ring — accessible golden ring */
-  .focus-gold:focus-visible {
-    @apply outline-none ring-2 ring-gold-400 ring-offset-2 ring-offset-beige-50;
-  }
-
-  /* Floating action button */
-  .fab {
-    @apply fixed z-50 w-14 h-14 rounded-full shadow-gold-lg flex items-center justify-center
-           bg-gradient-gold text-white cursor-pointer
-           transition-all duration-300 hover:scale-110 hover:shadow-gold-lg active:scale-95;
-  }
-
-  /* Chat panel */
-  .chat-panel {
-    @apply fixed z-50 bg-white rounded-2xl shadow-2xl border border-beige-400
-           flex flex-col overflow-hidden;
-    bottom: 6rem;
-    right: 1.5rem;
-    width: min(400px, calc(100vw - 2rem));
-    height: min(550px, calc(100vh - 10rem));
-  }
-
-  /* Tooltip */
-  .tooltip {
-    @apply absolute z-50 px-3 py-1.5 text-xs font-medium text-white bg-brown-800 rounded-lg
-           opacity-0 pointer-events-none transition-all duration-200 -translate-y-1;
-  }
-
-  .group:hover .tooltip {
-    @apply opacity-100 translate-y-0;
-  }
-
-  /* Smooth number counter */
-  .number-display {
-    @apply font-display font-bold tabular-nums;
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* Scroll indicator fade */
-  .scroll-fade-bottom {
-    mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
-  }
-
-  /* Badge pulse for live items */
-  .badge-pulse::after {
-    content: '';
-    @apply absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full;
-    animation: pulse-dot 2s ease-in-out infinite;
-  }
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.5); }
 }
 
 /* Page entrance animation */
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -313,49 +227,16 @@ html {
 }
 
 .page-enter {
-  animation: pageEnter 0.4s ease-out;
-}
-
-/* Slide up with fade — for lists/cards */
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  animation: pageEnter 0.35s ease-out;
 }
 
 .slide-up-fade {
-  animation: slideUpFade 0.5s ease-out both;
+  animation: pageEnter 0.4s ease-out both;
 }
 
-/* Scale in — for modals */
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.scale-in {
-  animation: scaleIn 0.2s ease-out;
-}
-
-/* Mobile touch feedback */
-@media (hover: none) {
-  .property-card:active {
-    transform: scale(0.98);
-    transition: transform 0.1s;
-  }
-
-  .glass-card:active {
-    opacity: 0.95;
+/* Safe area insets for mobile (iPhone 16 Pro Max) */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }

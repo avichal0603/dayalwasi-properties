@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { MessageCircle, X, Send, Building2, MapPin } from 'lucide-react';
+import { MessageCircle, X, Send, Building2, MapPin, Sparkles, Bot } from 'lucide-react';
 import { Property, PropertyType } from '@/lib/types';
 import { formatPrice, PROPERTY_TYPE_LABELS, DAYALBAGH_COLONIES } from '@/lib/constants';
 
@@ -218,11 +218,19 @@ export default function AIChatbot() {
       style={{ bottom: 'max(2.5rem, calc(2rem + env(safe-area-inset-bottom, 0px)))' }}
     >
       {isOpen && (
-        <div className="chat-panel mb-4 w-[92vw] max-w-[390px] h-[520px] max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-scale-in origin-bottom-right border border-gold-200/80 pointer-events-auto">
-          <div className="bg-gradient-to-r from-gold-500 to-gold-600 p-4 flex justify-between items-center text-white shadow-sm">
-            <div className="flex items-center gap-2">
-              <MessageCircle className="w-5 h-5 text-white" />
-              <span className="font-display font-semibold tracking-wide">Dayalwasi AI</span>
+        <div className="chat-panel mb-4 w-[92vw] max-w-[390px] h-[520px] max-h-[80vh] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-scale-in origin-bottom-right border border-gold-300/80 pointer-events-auto">
+          <div className="bg-gradient-to-r from-gold-600 via-gold-500 to-amber-600 p-4 flex justify-between items-center text-white shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <span className="font-display font-bold tracking-wide text-sm block">Dayalwasi AI</span>
+                <span className="text-[10px] text-amber-100/90 font-sans flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+                  Property Advisor • Dayalbagh
+                </span>
+              </div>
             </div>
             <button onClick={() => setIsOpen(false)} className="hover:bg-white/20 p-1.5 rounded-full transition-colors">
               <X className="w-5 h-5" />
@@ -292,13 +300,48 @@ export default function AIChatbot() {
         </div>
       )}
 
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Toggle Dayalwasi AI"
-        className="pointer-events-auto fab w-14 h-14 bg-gradient-to-r from-gold-500 to-gold-600 rounded-full shadow-2xl flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all duration-300 ring-4 ring-gold-400/30 hover:ring-gold-400/60"
-      >
-        {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
-      </button>
+      {/* Floating Pill Tag & Main AI Trigger Button */}
+      <div className="flex items-center gap-2.5 pointer-events-auto">
+        {!isOpen && (
+          <button
+            onClick={() => setIsOpen(true)}
+            className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 backdrop-blur-md border border-gold-300/80 shadow-luxury hover:border-gold-500 text-brown-900 transition-all duration-300 hover:scale-105 group cursor-pointer"
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-gold-500"></span>
+            </span>
+            <span className="text-xs font-semibold font-display tracking-wide text-brown-900 group-hover:text-gold-700 transition-colors">
+              Dayalwasi AI
+            </span>
+            <span className="text-[10px] font-medium text-olive-800 bg-olive-100 px-1.5 py-0.5 rounded-full border border-olive-200/60">
+              Online
+            </span>
+          </button>
+        )}
+
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle Dayalwasi AI"
+          className={`relative group w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 ${
+            isOpen
+              ? 'bg-brown-900 text-gold-300 ring-4 ring-brown-800/40'
+              : 'bg-gradient-to-tr from-gold-600 via-gold-500 to-amber-300 text-white ring-4 ring-gold-400/35 hover:ring-gold-400/70 shadow-gold-lg'
+          }`}
+        >
+          {/* Subtle inner reflective light */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent via-white/10 to-white/30 pointer-events-none" />
+          
+          {isOpen ? (
+            <X className="w-6 h-6 transition-transform duration-200 group-hover:rotate-90" />
+          ) : (
+            <div className="relative flex items-center justify-center">
+              <Sparkles className="w-6 h-6 animate-pulse-subtle drop-shadow-sm text-white" />
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-200 rounded-full animate-ping opacity-75" />
+            </div>
+          )}
+        </button>
+      </div>
     </div>
   );
 }

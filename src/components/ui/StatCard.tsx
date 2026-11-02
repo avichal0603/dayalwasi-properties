@@ -6,19 +6,21 @@ interface StatCardProps {
   icon: LucideIcon;
   label: string;
   value: string | number;
-  color?: string; // Optional color class for the icon background, e.g., 'text-green-600 bg-green-100'
+  color?: string;
   className?: string;
 }
 
-export function StatCard({ icon: Icon, label, value, color = 'text-gold-600 bg-beige-200', className }: StatCardProps) {
+export function StatCard({ icon: Icon, label, value, color = 'text-gold-600 bg-gold-50', className }: StatCardProps) {
   return (
-    <div className={cn("glass-card p-6 flex items-center gap-4 animate-slide-up", className)}>
-      <div className={cn("w-12 h-12 rounded-full flex items-center justify-center shrink-0", color)}>
-        <Icon size={24} />
+    <div className={cn("glass-card p-3.5 sm:p-5 flex items-center gap-3 sm:gap-4 animate-slide-up min-w-0 border-beige-300/80 shadow-sm", className)}>
+      <div className={cn("w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-sm", color)}>
+        <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
       </div>
-      <div>
-        <p className="text-sm text-brown-600 font-medium">{label}</p>
-        <h3 className="text-2xl font-display text-brown-900 font-bold">{value}</h3>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] sm:text-xs text-brown-500 font-medium tracking-wide uppercase truncate mb-0.5">{label}</p>
+        <h3 className="text-lg sm:text-xl lg:text-2xl font-display text-brown-900 font-bold tracking-tight truncate" title={String(value)}>
+          {value}
+        </h3>
       </div>
     </div>
   );

@@ -151,70 +151,74 @@ export default function PropertyDetailPage() {
           </div>
         </div>
 
-        <div className="mb-8">
-          <div className="flex flex-wrap items-center gap-3 mb-2">
-            <span className={`px-3 py-1 text-xs font-semibold rounded-full shadow-sm ${AVAILABILITY_COLORS[property.availability as keyof typeof AVAILABILITY_COLORS] || "bg-gray-100 text-gray-800"}`}>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+            <span className={`px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold rounded-full shadow-sm ${
+              property.availability === 'available'
+                ? "bg-olive-100/90 text-olive-900 border border-olive-300/60"
+                : (AVAILABILITY_COLORS[property.availability as keyof typeof AVAILABILITY_COLORS] || "bg-gray-100 text-gray-800")
+            }`}>
               {AVAILABILITY_LABELS[property.availability as keyof typeof AVAILABILITY_LABELS] || property.availability}
             </span>
-            <span className="badge bg-gold-100 text-gold-800 border-gold-200">
+            <span className="badge bg-gold-100 text-gold-800 border-gold-200 text-[11px] sm:text-xs">
               {PROPERTY_TYPE_LABELS[property.property_type as keyof typeof PROPERTY_TYPE_LABELS] || property.property_type}
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-display font-bold text-brown-900 mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-brown-900 mb-2 break-words">
             {property.title}
           </h1>
-          <div className="flex items-center text-brown-600">
-            <MapPin className="w-5 h-5 mr-2 text-gold-500" />
-            <span className="text-lg">{property.colony}{property.city ? `, ${property.city}` : ''}</span>
+          <div className="flex items-center text-brown-600 text-sm sm:text-base">
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 text-gold-500 shrink-0" />
+            <span className="truncate">{property.colony}{property.city ? `, ${property.city}` : ''}</span>
           </div>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <ImageGallery images={property.images || []} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+          <div className="lg:col-span-2 space-y-6 sm:space-y-8 min-w-0">
             {/* Overview Section */}
-            <section className="glass-card p-6">
-              <h2 className="section-title flex items-center mb-6">
-                <Home className="w-5 h-5 mr-2 text-gold-500" />
+            <section className="glass-card p-4 sm:p-6 min-w-0">
+              <h2 className="section-title flex items-center mb-4 sm:mb-6">
+                <Home className="w-5 h-5 mr-2 text-gold-500 shrink-0" />
                 Property Overview
               </h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div>
-                  <p className="text-sm text-brown-500 mb-1">Area</p>
-                  <p className="font-semibold text-brown-900">{property.area_gaj} Gaj</p>
-                  <p className="text-xs text-brown-400">{sqft.toFixed(2)} Sq Ft</p>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                <div className="min-w-0">
+                  <p className="text-xs sm:text-sm text-brown-500 mb-0.5">Area</p>
+                  <p className="font-semibold text-brown-900 text-sm sm:text-base">{property.area_gaj} गज</p>
+                  <p className="text-[11px] sm:text-xs text-brown-400">{sqft.toFixed(0)} Sq Ft</p>
                 </div>
                 {property.bhk && (
-                  <div>
-                    <p className="text-sm text-brown-500 mb-1">BHK</p>
-                    <p className="font-semibold text-brown-900">{property.bhk} BHK</p>
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-brown-500 mb-0.5">BHK</p>
+                    <p className="font-semibold text-brown-900 text-sm sm:text-base">{property.bhk} BHK</p>
                   </div>
                 )}
                 {property.facing && (
-                  <div>
-                    <p className="text-sm text-brown-500 mb-1">Facing</p>
-                    <p className="font-semibold text-brown-900">{FACING_LABELS[property.facing as keyof typeof FACING_LABELS] || property.facing}</p>
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-brown-500 mb-0.5">Facing</p>
+                    <p className="font-semibold text-brown-900 text-sm sm:text-base capitalize">{FACING_LABELS[property.facing as keyof typeof FACING_LABELS] || property.facing}</p>
                   </div>
                 )}
                 {property.construction_status && (
-                  <div>
-                    <p className="text-sm text-brown-500 mb-1">Status</p>
-                    <p className="font-semibold text-brown-900">{CONSTRUCTION_LABELS[property.construction_status as keyof typeof CONSTRUCTION_LABELS] || property.construction_status}</p>
+                  <div className="min-w-0">
+                    <p className="text-xs sm:text-sm text-brown-500 mb-0.5">Status</p>
+                    <p className="font-semibold text-brown-900 text-sm sm:text-base capitalize">{CONSTRUCTION_LABELS[property.construction_status as keyof typeof CONSTRUCTION_LABELS] || property.construction_status}</p>
                   </div>
                 )}
               </div>
             </section>
 
             {/* Detailed Dimensions & Features */}
-            <section className="glass-card p-6">
-              <h2 className="section-title flex items-center mb-6">
-                <Ruler className="w-5 h-5 mr-2 text-gold-500" />
+            <section className="glass-card p-4 sm:p-6 min-w-0">
+              <h2 className="section-title flex items-center mb-4 sm:mb-6">
+                <Ruler className="w-5 h-5 mr-2 text-gold-500 shrink-0" />
                 Dimensions & Features
               </h2>
-              <div className="grid grid-cols-2 gap-y-4 gap-x-8 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 sm:gap-y-4 gap-x-6 sm:gap-x-8 text-xs sm:text-sm">
                 <div className="flex justify-between border-b border-beige-200 pb-2">
                   <span className="text-brown-500">Dimensions</span>
                   <span className="font-medium text-brown-900">
@@ -264,15 +268,15 @@ export default function PropertyDetailPage() {
 
           <div className="space-y-8">
             {/* Financial Section */}
-            <section className="glass-card p-6 border-2 border-gold-200 bg-gradient-to-b from-white to-beige-50">
-              <h2 className="text-lg font-display font-bold text-brown-900 mb-6 border-b border-gold-100 pb-4">Financial Details</h2>
-              <div className="mb-6">
-                <div className="text-3xl font-bold text-gold-600 mb-1">
+            <section className="glass-card p-4 sm:p-6 border-2 border-gold-200 bg-gradient-to-b from-white to-beige-50 shadow-sm min-w-0">
+              <h2 className="text-base sm:text-lg font-display font-bold text-brown-900 mb-4 sm:mb-6 border-b border-gold-100 pb-3 sm:pb-4">Financial Details</h2>
+              <div className="mb-4 sm:mb-6">
+                <div className="text-2xl sm:text-3xl font-display font-bold text-gold-600 mb-1 truncate">
                   {formatPrice(property.price)}
                 </div>
-                <div className="text-sm text-brown-500 flex justify-between">
-                  <span>{formatPriceINR(property.price)}</span>
-                  <span>₹{formatPriceINR(pricePerGaj)} / Gaj</span>
+                <div className="text-xs sm:text-sm text-brown-500 flex flex-wrap items-center justify-between gap-1.5 pt-1">
+                  <span className="font-medium text-brown-700">{formatPriceINR(property.price)}</span>
+                  <span className="text-gold-700 font-semibold">₹{formatPriceINR(pricePerGaj)} / गज</span>
                 </div>
               </div>
               

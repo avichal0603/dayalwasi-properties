@@ -86,7 +86,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
   return (
     <form onSubmit={handleSubmit} className="space-y-8 page-enter">
       {/* Section 1: Basic Info */}
-      <div className="glass-card p-6 slide-up-fade">
+      <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade">
         <h2 className="section-title">Basic Information</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <div className="md:col-span-2">
@@ -138,7 +138,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
       </div>
 
       {/* Section 2: Owner Details - Moved up for prominence */}
-      <div className="glass-card p-6 slide-up-fade" style={{ animationDelay: "100ms" }}>
+      <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "100ms" }}>
         <h2 className="section-title">Owner Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <div>
@@ -153,7 +153,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
       </div>
 
       {/* Section 3: Measurements */}
-      <div className="glass-card p-6 slide-up-fade" style={{ animationDelay: "200ms" }}>
+      <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "200ms" }}>
         <h2 className="section-title">Measurements & Layout</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
           <div>
@@ -188,7 +188,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
       </div>
 
       {/* Section 4: Direction & Position */}
-      <div className="glass-card p-6 slide-up-fade" style={{ animationDelay: "300ms" }}>
+      <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "300ms" }}>
         <h2 className="section-title">Direction & Position</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <div>
@@ -224,7 +224,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
       </div>
 
       {/* Section 5: Financial */}
-      <div className="glass-card p-6 slide-up-fade" style={{ animationDelay: "400ms" }}>
+      <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "400ms" }}>
         <h2 className="section-title">Financial Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <div>
@@ -251,7 +251,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
       </div>
 
       {/* Section 6: Status */}
-      <div className="glass-card p-6 slide-up-fade" style={{ animationDelay: "500ms" }}>
+      <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "500ms" }}>
         <h2 className="section-title">Status</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <div>
@@ -270,7 +270,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
       </div>
 
       {/* Section 7: Location */}
-      <div className="glass-card p-6 slide-up-fade" style={{ animationDelay: "600ms" }}>
+      <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "600ms" }}>
         <h2 className="section-title">Map Location</h2>
         <p className="text-sm text-brown-500 mb-4 bg-beige-50 p-2 rounded border border-beige-200">
           <strong>Tip:</strong> Click anywhere on the map to set the exact coordinates, or right-click on Google Maps to get them manually.
@@ -307,7 +307,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
       </div>
 
       {/* Section 8: Google Drive Media */}
-      <div className="glass-card p-6 slide-up-fade" style={{ animationDelay: "650ms" }}>
+      <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "650ms" }}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
           <h2 className="section-title">Google Drive Archive (HD Videos & Photos)</h2>
           <button
@@ -339,7 +339,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
       </div>
 
       {/* Section 9: Notes */}
-      <div className="glass-card p-6 slide-up-fade" style={{ animationDelay: "700ms" }}>
+      <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "700ms" }}>
         <h2 className="section-title">Additional Notes</h2>
         <div className="mt-4">
           <Label>Notes</Label>
