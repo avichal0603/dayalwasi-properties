@@ -26,7 +26,7 @@ export function ImageGallery({ images, getImageUrl }: ImageGalleryProps) {
 
   if (!displayImages || displayImages.length === 0) {
     return (
-      <div className="w-full aspect-[16/9] bg-beige-100 rounded-xl flex flex-col items-center justify-center text-brown-400">
+      <div className="w-full aspect-[16/9] bg-beige-100 rounded-xl flex flex-col items-center justify-center text-brown-500">
         <ImageIcon className="w-16 h-16 mb-4 opacity-50" />
         <p className="text-lg font-medium">No images available</p>
       </div>

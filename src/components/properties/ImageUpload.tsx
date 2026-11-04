@@ -90,7 +90,7 @@ export function ImageUpload({ images, onImagesChange, existingImages = [], onRem
               <Sparkles className="w-3 h-3 text-gold-600" />
               <span>Smart Compression Active: 10MB photos auto-reduced to ~100KB</span>
             </div>
-            <p className="text-xs text-brown-400 mt-2">
+            <p className="text-xs text-brown-500 mt-2 font-medium">
               {totalImages} / 10 selected
             </p>
           </>

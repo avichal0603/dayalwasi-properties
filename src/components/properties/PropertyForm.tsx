@@ -34,7 +34,7 @@ const Label = ({ children, required }: { children: React.ReactNode, required?: b
     {required ? (
       <span className="text-[10px] text-red-500/70 font-normal">Required</span>
     ) : (
-      <span className="text-[10px] text-gray-400 font-normal">(Optional)</span>
+      <span className="text-[10px] text-brown-500 font-normal">(Optional)</span>
     )}
   </label>
 );
@@ -203,11 +203,11 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
             <input type="number" name="road_width" value={formData.road_width || ""} onChange={handleChange} className="input-field" min={0} />
           </div>
           <div className="flex items-center space-x-2 h-full pt-6">
-            <input type="checkbox" name="corner_plot" checked={formData.corner_plot || false} onChange={handleChange} className="w-4 h-4 text-gold-600 rounded border-gray-300" id="corner_plot" />
+            <input type="checkbox" name="corner_plot" checked={formData.corner_plot || false} onChange={handleChange} className="w-4 h-4 text-gold-600 rounded border-beige-300" id="corner_plot" />
             <label htmlFor="corner_plot" className="text-sm font-medium text-brown-700 cursor-pointer">Corner Plot</label>
           </div>
           <div className="flex items-center space-x-2 h-full pt-6">
-            <input type="checkbox" name="parking" checked={formData.parking || false} onChange={handleChange} className="w-4 h-4 text-gold-600 rounded border-gray-300" id="parking" />
+            <input type="checkbox" name="parking" checked={formData.parking || false} onChange={handleChange} className="w-4 h-4 text-gold-600 rounded border-beige-300" id="parking" />
             <label htmlFor="parking" className="text-sm font-medium text-brown-700 cursor-pointer">Parking Available</label>
           </div>
           {formData.parking && (
@@ -244,7 +244,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
             </select>
           </div>
           <div className="flex items-center space-x-2 h-full pt-6 md:col-span-2">
-            <input type="checkbox" name="loan_available" checked={formData.loan_available || false} onChange={handleChange} className="w-4 h-4 text-gold-600 rounded border-gray-300" id="loan_available" />
+            <input type="checkbox" name="loan_available" checked={formData.loan_available || false} onChange={handleChange} className="w-4 h-4 text-gold-600 rounded border-beige-300" id="loan_available" />
             <label htmlFor="loan_available" className="text-sm font-medium text-brown-700 cursor-pointer">Loan Available</label>
           </div>
         </div>
@@ -333,7 +333,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
               className="input-field pl-10"
               placeholder="https://drive.google.com/drive/folders/..."
             />
-            <FolderOpen className="w-4 h-4 text-brown-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <FolderOpen className="w-4 h-4 text-brown-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           </div>
         </div>
       </div>

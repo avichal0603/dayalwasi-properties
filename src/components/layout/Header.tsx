@@ -14,6 +14,7 @@ export function Header({ title, onMenuClick, onSearch }: HeaderProps) {
         <button 
           onClick={onMenuClick}
           className="lg:hidden text-brown-800 hover:text-gold-600 p-1"
+          aria-label="Open sidebar menu"
         >
           <Menu size={24} />
         </button>
@@ -23,7 +24,7 @@ export function Header({ title, onMenuClick, onSearch }: HeaderProps) {
       {onSearch && (
         <div className="relative max-w-xs w-full hidden sm:block">
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Search size={18} className="text-brown-400" />
+            <Search size={18} className="text-brown-500" />
           </div>
           <input 
             type="text" 

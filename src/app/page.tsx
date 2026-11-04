@@ -108,7 +108,7 @@ export default function LoginPage() {
               Properties
             </p>
             <span className="w-1 h-1 rounded-full bg-olive-500"></span>
-            <p className="text-[11px] font-sans tracking-wider text-brown-400 uppercase">
+            <p className="text-[11px] font-sans tracking-wider text-brown-500 uppercase">
               Dayalbagh, Agra
             </p>
           </div>
@@ -147,7 +147,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPin((prev) => !prev)}
-                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-400 hover:text-brown-700 transition-colors"
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-500 hover:text-brown-800 transition-colors"
                 tabIndex={-1}
                 aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
               >
@@ -189,7 +189,7 @@ export default function LoginPage() {
                 <span className="font-medium text-brown-800 group-hover:text-gold-700 transition-colors">
                   Remember this device
                 </span>
-                <p className="text-[11px] text-brown-400 mt-0.5 leading-relaxed">
+                <p className="text-[11px] text-brown-500 mt-0.5 leading-relaxed">
                   {rememberDevice
                     ? 'Saves authorization in cache for instant access next time.'
                     : 'PIN will be asked every time you reopen the app.'}
@@ -223,9 +223,9 @@ export default function LoginPage() {
         </form>
       </div>
 
-      <div className="mt-8 text-center text-xs text-brown-400 space-y-1">
+      <div className="mt-8 text-center text-xs text-brown-500 space-y-1">
         <p>&copy; {new Date().getFullYear()} Dayalwasi Properties. Authorized Management Only.</p>
-        <p className="text-[11px] text-brown-300">Confidential Real Estate Portfolio System</p>
+        <p className="text-[11px] text-brown-500">Confidential Real Estate Portfolio System</p>
       </div>
     </div>
   );

@@ -257,7 +257,7 @@ export default function EMICalculator() {
 
           {/* Presets */}
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-[10px] text-brown-400 font-medium">Quick:</span>
+            <span className="text-[10px] text-brown-500 font-medium">Quick:</span>
             {[
               { label: '₹20L', val: 2000000 },
               { label: '₹35L', val: 3500000 },
@@ -315,7 +315,7 @@ export default function EMICalculator() {
 
           {/* Bank Benchmark Presets */}
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-[10px] text-brown-400 font-medium">Banks:</span>
+            <span className="text-[10px] text-brown-500 font-medium">Banks:</span>
             {[
               { label: 'SBI (8.40%)', val: 8.4 },
               { label: 'HDFC (8.65%)', val: 8.65 },
@@ -390,7 +390,7 @@ export default function EMICalculator() {
 
           {/* Presets */}
           <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            <span className="text-[10px] text-brown-400 font-medium">Quick:</span>
+            <span className="text-[10px] text-brown-500 font-medium">Quick:</span>
             {[5, 10, 15, 20, 25, 30].map((yr) => (
               <button
                 key={yr}

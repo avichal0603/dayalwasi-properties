@@ -230,7 +230,7 @@ export default function AdminPage() {
                       <span className="w-5 h-5 rounded-full bg-gold-600 text-white flex items-center justify-center text-[10px] font-bold">1</span>
                       <span>Current Access PIN</span>
                     </label>
-                    <span className="text-[11px] text-brown-400">Step 1 of 3</span>
+                    <span className="text-[11px] text-brown-500">Step 1 of 3</span>
                   </div>
                   <div className="relative mt-2">
                     <input
@@ -246,7 +246,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => setShowCurrent((p) => !p)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-400 hover:text-brown-700 transition"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-500 hover:text-brown-800 transition"
                       tabIndex={-1}
                     >
                       {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -261,7 +261,7 @@ export default function AdminPage() {
                       <span className="w-5 h-5 rounded-full bg-gold-600 text-white flex items-center justify-center text-[10px] font-bold">2</span>
                       <span>New Access PIN</span>
                     </label>
-                    <span className="text-[11px] text-brown-400">Step 2 of 3</span>
+                    <span className="text-[11px] text-brown-500">Step 2 of 3</span>
                   </div>
                   <div className="relative mt-2">
                     <input
@@ -277,7 +277,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => setShowNew((p) => !p)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-400 hover:text-brown-700 transition"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-500 hover:text-brown-800 transition"
                       tabIndex={-1}
                     >
                       {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -285,7 +285,7 @@ export default function AdminPage() {
                   </div>
                   {newPassword && (
                     <div className="pt-1 flex items-center gap-2 text-[11px]">
-                      <span className="text-brown-400">Length:</span>
+                      <span className="text-brown-500">Length:</span>
                       <span className={`font-semibold ${newPassword.length >= 4 ? 'text-emerald-600' : 'text-gold-700'}`}>
                         {newPassword.length} digits {newPassword.length >= 4 ? '✓' : '(minimum 4 required)'}
                       </span>
@@ -300,7 +300,7 @@ export default function AdminPage() {
                       <span className="w-5 h-5 rounded-full bg-gold-600 text-white flex items-center justify-center text-[10px] font-bold">3</span>
                       <span>Confirm New PIN</span>
                     </label>
-                    <span className="text-[11px] text-brown-400">Step 3 of 3</span>
+                    <span className="text-[11px] text-brown-500">Step 3 of 3</span>
                   </div>
                   <div className="relative mt-2">
                     <input
@@ -318,7 +318,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => setShowConfirm((p) => !p)}
-                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-400 hover:text-brown-700 transition"
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-500 hover:text-brown-800 transition"
                       tabIndex={-1}
                     >
                       {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -359,7 +359,7 @@ export default function AdminPage() {
               </form>
 
               {/* Bottom reset option */}
-              <div className="mt-6 pt-5 border-t border-brown-100 flex items-center justify-between text-xs text-brown-400">
+              <div className="mt-6 pt-5 border-t border-brown-100 flex items-center justify-between text-xs text-brown-500">
                 <span>Need to restore factory default PIN?</span>
                 <button
                   type="button"
@@ -501,7 +501,7 @@ export default function AdminPage() {
                   <FolderOpen size={18} className="text-gold-600 group-hover:scale-110 transition-transform" />
                   <span className="text-xs font-semibold">Open Dayalwasi Drive Folder</span>
                 </div>
-                <ExternalLink size={14} className="text-brown-400 group-hover:text-gold-600" />
+                <ExternalLink size={14} className="text-brown-500 group-hover:text-gold-600" />
               </a>
             </div>
 
@@ -511,7 +511,7 @@ export default function AdminPage() {
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span className="font-medium text-brown-700">Supabase Cloud Connected</span>
               </div>
-              <span className="text-[11px] text-brown-400">Agra, India</span>
+              <span className="text-[11px] text-brown-500">Agra, India</span>
             </div>
 
           </div>
@@ -521,8 +521,8 @@ export default function AdminPage() {
         {showResetModal && (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-brown-200 space-y-4">
-              <div className="flex items-center gap-3 text-amber-700">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+              <div className="flex items-center gap-3 text-gold-700">
+                <div className="w-10 h-10 rounded-xl bg-gold-100 flex items-center justify-center">
                   <AlertTriangle size={20} />
                 </div>
                 <div>

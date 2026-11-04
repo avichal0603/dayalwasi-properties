@@ -310,8 +310,9 @@ export default function LandUnitConverter() {
                     </div>
                     <button
                       type="button"
-                      className="text-brown-400 group-hover:text-gold-700 transition p-1"
+                      className="text-brown-500 group-hover:text-gold-700 transition p-1"
                       title="Copy"
+                      aria-label={`Copy ${conv.name} conversion`}
                     >
                       {isCopied ? (
                         <Check size={14} className="text-emerald-600" />
@@ -325,7 +326,7 @@ export default function LandUnitConverter() {
                     <span className="text-base font-bold text-brown-950 block tracking-tight truncate">
                       {conv.display}
                     </span>
-                    <span className="text-[10px] text-brown-400 truncate block mt-0.5">
+                    <span className="text-[10px] text-brown-500 truncate block mt-0.5">
                       {conv.description}
                     </span>
                   </div>
@@ -348,10 +349,10 @@ export default function LandUnitConverter() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-2xl bg-beige-50/80 border border-brown-200/80">
             <div>
               <label className="text-[11px] font-bold text-brown-700 uppercase tracking-wider mb-1 block">
-                Rate per Gaj (₹ / गज)
+                Rate per Gaj (₹ / Gaj)
               </label>
               <div className="relative">
-                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-brown-400 text-sm font-semibold pointer-events-none">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-brown-500 text-sm font-semibold pointer-events-none">
                   ₹
                 </span>
                 <input
@@ -368,7 +369,7 @@ export default function LandUnitConverter() {
 
             <div>
               <label className="text-[11px] font-bold text-brown-700 uppercase tracking-wider mb-1 block">
-                Plot Area in Gaj (गज)
+                Plot Area in Gaj
               </label>
               <div className="relative">
                 <input
@@ -380,8 +381,8 @@ export default function LandUnitConverter() {
                   placeholder="e.g. 150"
                   className="input-field w-full font-bold text-base bg-white"
                 />
-                <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-brown-400 text-xs font-semibold pointer-events-none">
-                  गज
+                <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-brown-500 text-xs font-semibold pointer-events-none">
+                  Gaj
                 </span>
               </div>
             </div>

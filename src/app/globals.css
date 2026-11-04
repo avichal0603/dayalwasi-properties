@@ -29,12 +29,27 @@
     min-height: 100vh;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  /* Typography rule: Playfair Display is reserved for H1 page titles and brand mark */
+  h1 {
     @apply font-display tracking-tight text-brown-900;
+  }
+
+  h2, h3, h4, h5, h6 {
+    @apply font-sans font-semibold tracking-tight text-brown-900;
   }
 
   ::selection {
     @apply bg-gold-200 text-brown-900;
+  }
+
+  /* Accessible focus rings */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #FFFDF9, 0 0 0 4px #C9A84C !important;
   }
 
   /* Custom smooth scrollbar */
@@ -56,45 +71,45 @@
 @layer components {
   /* Fluid responsive luxury card */
   .glass-card {
-    @apply bg-white/90 backdrop-blur-md border border-beige-400/80 rounded-2xl shadow-card
-           min-w-0 break-words transition-all duration-300;
+    @apply bg-white/95 backdrop-blur-md border border-beige-300 rounded-2xl shadow-card
+           min-w-0 break-words transition-all duration-200;
   }
 
   .glass-card:hover {
-    @apply shadow-card-hover border-gold-300/60;
+    @apply shadow-card-hover border-gold-300/80;
   }
 
-  /* Gold gradient button with reflective metallic feel */
+  /* Gold gradient button with reflective metallic feel (No hover:scale) */
   .btn-gold {
     @apply inline-flex items-center justify-center bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600 text-white font-semibold 
            px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-gold hover:shadow-gold-lg 
-           transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] min-h-[44px]
-           text-sm tracking-wide;
+           transition-all duration-200 active:scale-[0.98] min-h-[44px]
+           text-sm tracking-wide focus-visible:ring-2 focus-visible:ring-gold-400;
   }
 
   /* Olive accent luxury button */
   .btn-olive {
     @apply inline-flex items-center justify-center bg-olive-700 hover:bg-olive-800 text-white font-medium
-           px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-sm transition-all duration-300
-           hover:scale-[1.02] active:scale-[0.98] min-h-[44px] text-sm;
+           px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-sm transition-all duration-200
+           active:scale-[0.98] min-h-[44px] text-sm focus-visible:ring-2 focus-visible:ring-gold-400;
   }
 
   /* Brown solid button */
   .btn-brown {
     @apply inline-flex items-center justify-center bg-brown-700 text-white font-medium px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl
-           hover:bg-brown-800 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] min-h-[44px] text-sm;
+           hover:bg-brown-800 transition-all duration-200 active:scale-[0.98] min-h-[44px] text-sm focus-visible:ring-2 focus-visible:ring-gold-400;
   }
 
   /* Outline button */
   .btn-outline {
     @apply inline-flex items-center justify-center border border-gold-400/80 bg-white/80 backdrop-blur-sm text-brown-800 font-medium 
-           px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl hover:bg-gold-50 hover:border-gold-500 transition-all duration-200 min-h-[40px] text-xs sm:text-sm;
+           px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl hover:bg-gold-50 hover:border-gold-500 transition-all duration-200 min-h-[40px] text-xs sm:text-sm focus-visible:ring-2 focus-visible:ring-gold-400;
   }
 
-  /* Input styling: 16px on mobile prevents iOS Safari auto-zoom jump! */
+  /* Input styling: 16px on mobile prevents iOS Safari auto-zoom jump */
   .input-field {
     @apply w-full px-3.5 sm:px-4 py-2.5 sm:py-3 bg-white border border-beige-400 rounded-xl
-           text-base sm:text-sm text-brown-900 placeholder:text-brown-400
+           text-base sm:text-sm text-brown-900 placeholder:text-brown-500
            focus:outline-none focus:ring-2 focus:ring-gold-400/80 focus:border-gold-400
            transition-all duration-200 shadow-sm min-h-[44px];
   }
@@ -122,7 +137,7 @@
   /* Sidebar nav link */
   .nav-link {
     @apply flex items-center gap-3 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl text-beige-100
-           hover:bg-white/10 hover:text-white transition-all duration-200 text-sm font-medium;
+           hover:bg-white/10 hover:text-white transition-all duration-200 text-sm font-medium focus-visible:ring-2 focus-visible:ring-gold-400;
   }
 
   .nav-link.active {
@@ -134,9 +149,9 @@
     @apply max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 w-full min-w-0;
   }
 
-  /* Section title */
+  /* Section title: Inter semibold */
   .section-title {
-    @apply text-xl sm:text-2xl font-display font-bold text-brown-900 tracking-tight;
+    @apply text-lg sm:text-xl font-sans font-bold text-brown-900 tracking-tight;
   }
 
   /* Leaflet map overrides */
@@ -180,40 +195,35 @@
   animation: shimmer 2.5s infinite;
 }
 
-/* Premium card hover */
+/* Premium card hover (Subtle box-shadow & border tint only, NO transform lift) */
 @layer components {
   .property-card {
-    @apply bg-white/95 backdrop-blur-sm border border-beige-400/80 rounded-2xl shadow-card
-           min-w-0 break-words transition-all duration-300 ease-out;
+    @apply bg-white/95 backdrop-blur-sm border border-beige-300 rounded-2xl shadow-card
+           min-w-0 break-words transition-colors duration-200 ease-out;
   }
 
   .premium-card {
-    @apply bg-white/95 backdrop-blur-sm border border-beige-400/80 rounded-2xl shadow-card
-           min-w-0 break-words transition-all duration-300 ease-out;
+    @apply bg-white/95 backdrop-blur-sm border border-beige-300 rounded-2xl shadow-card
+           min-w-0 break-words transition-colors duration-200 ease-out;
   }
 
   .premium-card:hover {
-    @apply -translate-y-1 shadow-card-hover border-gold-400/60;
+    @apply shadow-card-hover border-gold-400/70;
     box-shadow:
-      0 0 0 1px rgba(201, 168, 76, 0.15),
-      0 12px 28px -5px rgba(44, 30, 20, 0.08),
-      0 0 20px rgba(201, 168, 76, 0.08);
+      0 0 0 1px rgba(201, 168, 76, 0.2),
+      0 8px 20px -4px rgba(44, 30, 20, 0.06);
   }
 
   .premium-card .card-image {
-    @apply transition-transform duration-700 ease-out;
-  }
-
-  .premium-card:hover .card-image {
-    @apply scale-105;
+    @apply transition-opacity duration-300 ease-out;
   }
 
   .btn-press {
-    @apply transition-all duration-150 active:scale-95 active:shadow-none;
+    @apply transition-all duration-150 active:scale-[0.98] active:shadow-none;
   }
 
   .gold-glow:hover {
-    box-shadow: 0 0 25px rgba(201, 168, 76, 0.2), 0 0 50px rgba(201, 168, 76, 0.05);
+    box-shadow: 0 0 20px rgba(201, 168, 76, 0.15), 0 0 40px rgba(201, 168, 76, 0.04);
   }
 }
 
@@ -221,7 +231,7 @@
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -230,16 +240,28 @@
 }
 
 .page-enter {
-  animation: pageEnter 0.35s ease-out;
+  animation: pageEnter 0.25s ease-out;
 }
 
 .slide-up-fade {
-  animation: pageEnter 0.4s ease-out both;
+  animation: pageEnter 0.3s ease-out both;
 }
 
 /* Safe area insets for mobile (iPhone 16 Pro Max) */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Accessibility: Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

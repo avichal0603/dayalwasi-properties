@@ -181,7 +181,7 @@ export default function MapPage() {
                   <button
                     type="button"
                     onClick={() => setIsLegendOpen(false)}
-                    className="p-1 rounded-md text-brown-400 hover:text-brown-700 hover:bg-beige-100 transition-colors"
+                    className="p-1 rounded-md text-brown-500 hover:text-brown-700 hover:bg-beige-100 transition-colors"
                     aria-label="Collapse map legend"
                   >
                     <ChevronDown className="w-3.5 h-3.5" />

@@ -227,7 +227,7 @@ export function PropertyFilters({
       {/* Top Search & Toggle Bar */}
       <div className="flex items-center gap-3">
         <div className="relative flex-grow min-w-0">
-          <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-brown-400 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
+          <Search className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-brown-500 w-4 h-4 sm:w-5 sm:h-5 pointer-events-none" />
           <input
             type="text"
             placeholder="Search title, colony, owner, or notes..."
@@ -239,7 +239,7 @@ export function PropertyFilters({
             <button
               type="button"
               onClick={() => handleFilterChange("search", undefined)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-brown-400 hover:text-brown-700 p-0.5 rounded-full"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-brown-500 hover:text-brown-700 p-0.5 rounded-full"
               aria-label="Clear search"
             >
               <X className="w-4 h-4" />

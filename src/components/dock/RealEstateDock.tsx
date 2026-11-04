@@ -101,7 +101,7 @@ export default function RealEstateDock() {
             {/* Top Close Button */}
             <button
               onClick={() => setActiveTool('none')}
-              className="absolute top-4 right-4 p-2 rounded-full text-brown-400 hover:text-brown-900 hover:bg-beige-100 transition"
+              className="absolute top-4 right-4 p-2 rounded-full text-brown-500 hover:text-brown-900 hover:bg-beige-100 transition"
               aria-label="Close Tool"
             >
               <X size={20} />

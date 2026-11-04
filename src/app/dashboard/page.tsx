@@ -239,7 +239,7 @@ export default function DashboardPage() {
                           {formatArea(property.area_gaj, property.area_sqft)}
                         </p>
                       </div>
-                      <ChevronRight size={18} className="text-brown-400" />
+                      <ChevronRight size={18} className="text-brown-500" />
                     </div>
                   </Link>
                 ))}
@@ -320,7 +320,7 @@ export default function DashboardPage() {
                             {formatArea(property.area_gaj, property.area_sqft)}
                           </p>
                         </div>
-                        <span className="p-2 text-brown-400 group-hover:text-gold-700 transition-colors">
+                        <span className="p-2 text-brown-500 group-hover:text-gold-700 transition-colors">
                           <ChevronRight size={18} />
                         </span>
                       </div>
@@ -328,8 +328,8 @@ export default function DashboardPage() {
                   ))}
                 </div>
               ) : (
-                <div className="p-8 text-center text-brown-400 flex flex-col items-center">
-                  <Building2 size={32} className="mb-2 opacity-20" />
+                <div className="p-8 text-center text-brown-500 flex flex-col items-center">
+                  <Building2 size={32} className="mb-2 opacity-30" />
                   <p className="text-sm">No properties added yet.</p>
                 </div>
               )}
@@ -379,7 +379,7 @@ export default function DashboardPage() {
                         <h4 className="font-semibold text-xs text-brown-900 group-hover:text-gold-800 truncate">
                           {property.title}
                         </h4>
-                        <span className="text-[10px] text-brown-400 shrink-0 ml-2">
+                        <span className="text-[10px] text-brown-500 shrink-0 ml-2">
                           {property.colony}
                         </span>
                       </div>
@@ -462,7 +462,7 @@ export default function DashboardPage() {
                       <h4 className="font-semibold text-brown-900 text-xs sm:text-sm truncate">
                         Google Drive Media
                       </h4>
-                      <ExternalLink size={13} className="text-brown-400 group-hover:text-gold-700" />
+                      <ExternalLink size={13} className="text-brown-500 group-hover:text-gold-700" />
                     </div>
                     <p className="text-[11px] text-brown-500 truncate">
                       4K Videos, RAW Photos & Master Docs
