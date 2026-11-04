@@ -54,7 +54,7 @@ export const AVAILABILITY_COLORS: Record<AvailabilityStatus, string> = {
 };
 
 export const AVAILABILITY_PIN_COLORS: Record<AvailabilityStatus, string> = {
-  available: '#4C5F48',
+  available: '#2D6A4F',
   reserved: '#C9A84C',
   negotiation: '#6B4226',
   sold: '#9C8A6E',
