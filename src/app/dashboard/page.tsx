@@ -147,7 +147,7 @@ export default function DashboardPage() {
                     <span className="font-display text-lg font-bold text-gold-300">D</span>
                   </div>
                 </div>
-                <span className="text-gold-metallic">Dayalwasi Properties</span>
+                <span className="text-gold-metallic">Dayalwasi Properties & Solutions</span>
               </h1>
               <p className="text-xs sm:text-sm text-beige-200/90 max-w-2xl leading-relaxed italic font-serif">
                 &ldquo;Where trust is built on solid ground — The benchmark of integrity, prestige, and verified real estate excellence across Dayalbagh, Agra.&rdquo;
