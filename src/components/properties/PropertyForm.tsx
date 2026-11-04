@@ -84,7 +84,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
   const pricePerGaj = formData.price && formData.area_gaj ? calcPricePerGaj(formData.price, formData.area_gaj) : 0;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 page-enter">
+    <form onSubmit={handleSubmit} className="space-y-8 page-enter pb-32">
       {/* Section 1: Basic Info */}
       <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade">
         <h2 className="section-title">Basic Information</h2>

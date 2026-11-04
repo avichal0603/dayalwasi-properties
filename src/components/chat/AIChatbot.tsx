@@ -21,9 +21,28 @@ const WELCOME_MESSAGE: Message = {
   text: 'Namaste! 🏠 I can help you search properties. Try asking:\n• "Properties in Tulsi Vihar"\n• "Plots under 50 lakh"\n• "Available 3 BHK houses"'
 };
 
-export default function AIChatbot() {
+interface AIChatbotProps {
+  isOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
+}
+
+export default function AIChatbot({
+  isOpen: controlledIsOpen,
+  onOpenChange,
+  hideTrigger = false,
+}: AIChatbotProps = {}) {
   const { properties } = useProperties();
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isOpen = controlledIsOpen !== undefined ? controlledIsOpen : internalIsOpen;
+
+  const setIsOpen = (val: boolean) => {
+    if (controlledIsOpen === undefined) {
+      setInternalIsOpen(val);
+    }
+    onOpenChange?.(val);
+  };
+
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -98,102 +117,87 @@ export default function AIChatbot() {
     if (aMatch) {
       const a = parseInt(aMatch[1]);
       if (query.includes('above') || query.includes('over')) {
-         areaMin = a;
+        areaMin = a;
       } else if (query.includes('under') || query.includes('below')) {
-         areaMax = a;
+        areaMax = a;
       } else {
-         areaMin = a * 0.9;
-         areaMax = a * 1.1;
+        areaMin = a - 20;
+        areaMax = a + 20;
       }
     }
 
     // Parse Availability
     if (query.includes('available')) isAvailable = true;
-    else if (query.includes('sold')) isAvailable = false;
+    if (query.includes('sold')) isAvailable = false;
 
-    // General queries
-    if (query.includes('how many properties') || query.includes('total properties')) {
-      return { isCountOnly: true };
-    }
+    // Filter properties
+    let results = properties.filter(p => {
+      if (colonyMatch && p.colony.toLowerCase() !== colonyMatch.toLowerCase()) return false;
+      if (typeMatch && p.property_type !== typeMatch) return false;
+      if (priceMax && p.price > priceMax) return false;
+      if (priceMin && p.price < priceMin) return false;
+      if (bhkMatch && p.bhk !== bhkMatch) return false;
+      if (areaMin && p.area_gaj < areaMin) return false;
+      if (areaMax && p.area_gaj > areaMax) return false;
+      if (isAvailable !== null) {
+        if (isAvailable && p.availability !== 'available') return false;
+        if (!isAvailable && p.availability !== 'sold') return false;
+      }
+      return true;
+    });
 
-    return {
-      priceMax,
-      priceMin,
-      colonyMatch,
-      typeMatch,
-      bhkMatch,
-      areaMin,
-      areaMax,
-      isAvailable
-    };
-  };
-
-  const executeQuery = (criteria: ReturnType<typeof parseQuery>) => {
-    if (criteria.isCountOnly) {
-      return {
-        text: `We currently have ${properties.length} properties in our database.`,
-        results: []
-      };
-    }
-
-    let filtered = properties;
-
-    if (criteria.isAvailable !== null) {
-      filtered = filtered.filter(p => (p.availability === 'available') === criteria.isAvailable);
-    }
-    if (criteria.priceMax !== null) {
-      filtered = filtered.filter(p => p.price <= criteria.priceMax!);
-    }
-    if (criteria.priceMin !== null) {
-      filtered = filtered.filter(p => p.price >= criteria.priceMin!);
-    }
-    if (criteria.colonyMatch !== null) {
-      filtered = filtered.filter(p => p.colony === criteria.colonyMatch);
-    }
-    if (criteria.typeMatch !== null) {
-      filtered = filtered.filter(p => p.property_type === criteria.typeMatch);
-    }
-    if (criteria.bhkMatch !== null) {
-      filtered = filtered.filter(p => p.bhk === criteria.bhkMatch);
-    }
-    if (criteria.areaMin !== null) {
-      filtered = filtered.filter(p => p.area_gaj >= criteria.areaMin!);
-    }
-    if (criteria.areaMax !== null) {
-      filtered = filtered.filter(p => p.area_gaj <= criteria.areaMax!);
-    }
-
+    // Generate response text
     let responseText = '';
-    if (filtered.length === 0) {
-      responseText = 'No properties match that criteria. Try something else!';
+    const filtersUsed = [];
+    if (colonyMatch) filtersUsed.push(`in ${colonyMatch}`);
+    if (typeMatch) filtersUsed.push(`${PROPERTY_TYPE_LABELS[typeMatch]}s`);
+    if (bhkMatch) filtersUsed.push(`${bhkMatch} BHK`);
+    if (priceMax && !priceMin) filtersUsed.push(`under ${formatPrice(priceMax)}`);
+    if (priceMin && !priceMax) filtersUsed.push(`above ${formatPrice(priceMin)}`);
+    if (priceMin && priceMax) filtersUsed.push(`between ${formatPrice(priceMin)} and ${formatPrice(priceMax)}`);
+    if (areaMin || areaMax) filtersUsed.push(`around ${areaMin || areaMax} gaj`);
+
+    if (results.length > 0) {
+      const filterDesc = filtersUsed.length > 0 ? ` ${filtersUsed.join(', ')}` : '';
+      responseText = `Found ${results.length} matching propert${results.length === 1 ? 'y' : 'ies'}${filterDesc}:`;
     } else {
-      responseText = `Found ${filtered.length} properties matching your search:`;
+      if (filtersUsed.length > 0) {
+        responseText = `I couldn't find any properties matching ${filtersUsed.join(', ')}. Here are a few other recommendations in Dayalbagh:`;
+        results = properties.slice(0, 3);
+      } else {
+        // Fallback for general questions
+        if (query.includes('hello') || query.includes('hi') || query.includes('namaste')) {
+          responseText = "Hello! Looking for a plot, flat, or house in Dayalbagh? Tell me what you're looking for!";
+        } else if (query.includes('contact') || query.includes('phone') || query.includes('office')) {
+          responseText = "Dayalwasi Properties specializes in premium real estate across Dayalbagh, Agra. You can reach out directly or check the Contacts tab for registered brokers!";
+        } else if (query.includes('colon') || query.includes('area') || query.includes('location')) {
+          responseText = `We cover top colonies in Dayalbagh including Tulsi Vihar, Jeevan Jyoti, Prem Nagar, Swami Bagh, and more. Which area interests you?`;
+        } else {
+          responseText = "I specialize in Dayalbagh properties! Try searching by colony (e.g. 'Tulsi Vihar'), property type ('plots', 'houses'), or budget ('under 50 lakh').";
+          results = properties.slice(0, 3);
+        }
+      }
     }
 
-    return {
-      text: responseText,
-      results: filtered.slice(0, 5) // limit to top 5
-    };
+    return { text: responseText, results: results.slice(0, 4) };
   };
 
   const handleSend = () => {
     if (!inputValue.trim()) return;
 
-    const userText = inputValue.trim();
-    const newUserMsg: Message = {
+    const userText = inputValue;
+    const newMsg: Message = {
       id: Date.now().toString(),
       sender: 'user',
       text: userText
     };
 
-    setMessages(prev => [...prev, newUserMsg]);
+    setMessages(prev => [...prev, newMsg]);
     setInputValue('');
     setIsTyping(true);
 
     setTimeout(() => {
-      const criteria = parseQuery(userText);
-      const res = executeQuery(criteria);
-      
+      const res = parseQuery(userText);
       const newBotMsg: Message = {
         id: (Date.now() + 1).toString(),
         sender: 'bot',
@@ -203,7 +207,7 @@ export default function AIChatbot() {
 
       setMessages(prev => [...prev, newBotMsg]);
       setIsTyping(false);
-    }, 500);
+    }, 450);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -212,6 +216,115 @@ export default function AIChatbot() {
     }
   };
 
+  // Render modal version when controlled by Dock (hideTrigger = true)
+  if (hideTrigger) {
+    if (!isOpen) return null;
+    return (
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 animate-fade-in"
+        onClick={() => setIsOpen(false)}
+      >
+        <div
+          className="chat-panel w-[92vw] max-w-[420px] h-[580px] max-h-[85vh] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-scale-in border border-gold-300/80 relative"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="bg-gradient-to-r from-gold-600 via-gold-500 to-amber-600 p-4 flex justify-between items-center text-white shadow-sm shrink-0">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <span className="font-display font-bold tracking-wide text-sm block">Dayalwasi AI</span>
+                <span className="text-[10px] text-amber-100/90 font-sans flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+                  Property Advisor • Dayalbagh
+                </span>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="hover:bg-white/20 p-1.5 rounded-full transition-colors text-white"
+              aria-label="Close AI Chat"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 p-4 overflow-y-auto bg-beige-50 flex flex-col gap-4">
+            {messages.map((msg) => (
+              <div key={msg.id} className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'} animate-slide-up-fade`}>
+                <div className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
+                  msg.sender === 'user' 
+                    ? 'bg-gradient-to-r from-gold-500 to-gold-600 text-white rounded-br-none' 
+                    : 'bg-white text-brown-900 border border-beige-200 rounded-bl-none'
+                }`}>
+                  <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.text}</p>
+                </div>
+                
+                {msg.results && msg.results.length > 0 && (
+                  <div className="mt-2 flex flex-col gap-2 w-[92%]">
+                    {msg.results.map(prop => (
+                      <Link
+                        key={prop.id}
+                        href={`/properties/${prop.id}`}
+                        onClick={() => setIsOpen(false)}
+                        className="premium-card p-3 rounded-xl border border-gold-200/60 bg-white hover:border-gold-400 transition-colors block shadow-sm"
+                      >
+                        <div className="font-semibold text-brown-900 text-sm mb-1 truncate">{prop.title}</div>
+                        <div className="flex items-center text-xs text-brown-600 mb-2">
+                          <MapPin className="w-3 h-3 mr-1 text-gold-600" />
+                          <span className="truncate">{prop.colony}</span>
+                        </div>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="font-bold text-gold-700">{formatPrice(prop.price)}</span>
+                          <span className="text-brown-600 text-xs font-medium">{prop.area_gaj} गज</span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            
+            {isTyping && (
+              <div className="flex items-start animate-fade-in">
+                <div className="bg-white border border-beige-200 rounded-2xl rounded-bl-none p-3 flex gap-1 shadow-sm">
+                  <span className="w-2 h-2 bg-gold-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                  <span className="w-2 h-2 bg-gold-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                  <span className="w-2 h-2 bg-gold-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input */}
+          <div className="p-3 border-t border-gold-100 bg-white flex gap-2 shrink-0">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Ask about properties in Dayalbagh..."
+              className="input-field flex-1 !py-2 !px-4 text-sm"
+              autoFocus
+            />
+            <button
+              onClick={handleSend}
+              disabled={!inputValue.trim() || isTyping}
+              className="btn-gold !p-2 !rounded-xl aspect-square flex items-center justify-center disabled:opacity-50"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Standalone floating bottom-right version (if rendered independently)
   return (
     <div 
       className="fixed right-5 sm:right-7 z-50 flex flex-col items-end pointer-events-none"
@@ -329,7 +442,6 @@ export default function AIChatbot() {
               : 'bg-gradient-to-tr from-gold-600 via-gold-500 to-amber-300 text-white ring-4 ring-gold-400/35 hover:ring-gold-400/70 shadow-gold-lg'
           }`}
         >
-          {/* Subtle inner reflective light */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent via-white/10 to-white/30 pointer-events-none" />
           
           {isOpen ? (

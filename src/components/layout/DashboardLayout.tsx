@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { Loader2 } from 'lucide-react';
-import AIChatbot from '../chat/AIChatbot';
+import RealEstateDock from '../dock/RealEstateDock';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -51,8 +51,8 @@ export function DashboardLayout({ children, title = 'Dashboard', onSearch }: Das
         <main className="flex-1 overflow-y-auto min-w-0 w-full relative">
           {children}
         </main>
-        {/* Global Floating AI Chatbot */}
-        <AIChatbot />
+        {/* Global Floating Real Estate Tools & AI Dock */}
+        <RealEstateDock />
       </div>
     </div>
   );
