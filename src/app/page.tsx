@@ -3,13 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
-import { Lock, Eye, EyeOff, ShieldCheck, KeyRound } from 'lucide-react';
+import { Eye, EyeOff, ShieldCheck, KeyRound, Clock } from 'lucide-react';
 
 export default function LoginPage() {
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [pin, setPin] = useState('');
+  const [showPin, setShowPin] = useState(false);
   const [rememberDevice, setRememberDevice] = useState(true);
   const [error, setError] = useState('');
+  const [retryAfter, setRetryAfter] = useState<number>(0);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { login, isAuthenticated, isLoading, authMode } = useAuth();
   const router = useRouter();
@@ -26,21 +27,47 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, router]);
 
+  // Live countdown timer for rate limiting lockout
+  useEffect(() => {
+    if (retryAfter <= 0) return;
+
+    const timer = setInterval(() => {
+      setRetryAfter((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setError('');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [retryAfter]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!password.trim()) return;
+    if (retryAfter > 0 || !pin.trim()) return;
 
     setError('');
     setIsLoggingIn(true);
 
     try {
-      const res = await login(password.trim(), rememberDevice);
+      const res = await login(pin.trim(), rememberDevice);
       if (res.success) {
         router.push('/dashboard');
       } else {
-        setError(res.message || 'Incorrect PIN or password');
+        if (res.retryAfter && res.retryAfter > 0) {
+          setRetryAfter(res.retryAfter);
+          setError(
+            res.message ||
+              `Too many failed attempts. Security lockout active for ${res.retryAfter}s.`
+          );
+        } else {
+          setError(res.message || 'Incorrect access PIN');
+        }
       }
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please verify your connection.');
     } finally {
       setIsLoggingIn(false);
@@ -54,6 +81,8 @@ export default function LoginPage() {
       </div>
     );
   }
+
+  const isLocked = retryAfter > 0;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-beige-50 p-4 sm:p-6 animate-fade-in relative selection:bg-gold-500 selection:text-white">
@@ -93,41 +122,57 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-xs font-semibold text-brown-700 uppercase tracking-wider mb-2">
-              Access PIN / Password
+              Access PIN
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gold-600">
                 <KeyRound size={18} />
               </div>
               <input
-                type={showPassword ? 'text' : 'password'}
-                value={password}
+                type={showPin ? 'text' : 'password'}
+                inputMode="numeric"
+                pattern="[0-9]*"
+                disabled={isLocked}
+                value={pin}
                 onChange={(e) => {
-                  setPassword(e.target.value);
+                  setPin(e.target.value);
                   if (error) setError('');
                 }}
                 placeholder="Enter access PIN"
-                className="input-field pl-10 pr-11 w-full text-base"
+                className="input-field pl-10 pr-11 w-full text-base tracking-widest disabled:opacity-50 disabled:bg-beige-100"
                 required
                 autoFocus
                 autoComplete="current-password"
               />
               <button
                 type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
+                onClick={() => setShowPin((prev) => !prev)}
                 className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-400 hover:text-brown-700 transition-colors"
                 tabIndex={-1}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPin ? 'Hide PIN' : 'Show PIN'}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPin ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
-            {error && (
+
+            {/* Error or Rate Limit Lockout Banner */}
+            {isLocked ? (
+              <div className="mt-3 p-3 rounded-xl bg-gold-50 border border-gold-300 text-brown-900 text-xs font-medium flex items-center gap-2.5 animate-pulse">
+                <Clock className="w-4 h-4 text-gold-600 shrink-0" />
+                <div>
+                  <span className="font-bold text-brown-950 block">Security Lockout Active</span>
+                  <span className="text-brown-700">
+                    Too many attempts. Retry in{' '}
+                    <span className="font-mono font-bold text-gold-700">{retryAfter}s</span>.
+                  </span>
+                </div>
+              </div>
+            ) : error ? (
               <div className="mt-2.5 p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-600 text-xs font-medium flex items-center gap-2 animate-shake">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-500 shrink-0"></span>
                 <span>{error}</span>
               </div>
-            )}
+            ) : null}
           </div>
 
           {/* Session / Cache persistence choice */}
@@ -136,6 +181,7 @@ export default function LoginPage() {
               <input
                 type="checkbox"
                 checked={rememberDevice}
+                disabled={isLocked}
                 onChange={(e) => setRememberDevice(e.target.checked)}
                 className="mt-0.5 rounded border-brown-300 text-gold-600 focus:ring-gold-500 h-4 w-4 shrink-0 transition"
               />
@@ -154,13 +200,18 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={isLoggingIn || !password.trim()}
+            disabled={isLoggingIn || isLocked || !pin.trim()}
             className="btn-gold w-full flex items-center justify-center gap-2 py-3 text-sm font-semibold shadow-md active:scale-[0.99] transition-transform disabled:opacity-60"
           >
             {isLoggingIn ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                <span>Verifying Access...</span>
+                <span>Verifying Access PIN...</span>
+              </>
+            ) : isLocked ? (
+              <>
+                <Clock size={18} />
+                <span>Locked ({retryAfter}s)</span>
               </>
             ) : (
               <>

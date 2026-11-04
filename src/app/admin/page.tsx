@@ -57,26 +57,26 @@ export default function AdminPage() {
     setErrorMessage('');
     setSuccessMessage('');
 
-    // Step 1 validation: Current password
+    // Step 1 validation: Current PIN
     if (!currentPassword.trim()) {
-      setErrorMessage('Please enter your current password or PIN.');
+      setErrorMessage('Please enter your current PIN.');
       return;
     }
 
-    // Step 2 validation: New password requirements
+    // Step 2 validation: New PIN requirements
     if (newPassword.trim().length < 4) {
-      setErrorMessage('New PIN/password must be at least 4 characters or digits long.');
+      setErrorMessage('New PIN must be at least 4 digits or characters long.');
       return;
     }
 
     if (newPassword.trim() === currentPassword.trim()) {
-      setErrorMessage('New password cannot be identical to your current password.');
+      setErrorMessage('New PIN cannot be identical to your current PIN.');
       return;
     }
 
     // Step 3 validation: Confirmation match
     if (newPassword.trim() !== confirmPassword.trim()) {
-      setErrorMessage('Confirm password does not match the new password.');
+      setErrorMessage('Confirm PIN does not match the new PIN.');
       return;
     }
 
@@ -90,7 +90,7 @@ export default function AdminPage() {
         setNewPassword('');
         setConfirmPassword('');
       } else {
-        setErrorMessage(res.message || 'Failed to update PIN. Please verify your current password.');
+        setErrorMessage(res.message || 'Failed to update PIN. Please verify your current PIN.');
       }
     } catch (err) {
       setErrorMessage('An unexpected error occurred while saving.');
@@ -130,7 +130,7 @@ export default function AdminPage() {
         setShowResetModal(false);
         setResetAuthPassword('');
       } else {
-        toast.error(res.message || 'Incorrect password verification');
+        toast.error(res.message || 'Incorrect PIN verification');
       }
     } catch {
       toast.error('Failed to reset PIN');
@@ -191,7 +191,7 @@ export default function AdminPage() {
                   </div>
                   <div>
                     <h2 className="text-lg font-display font-bold text-brown-900">
-                      Change Access PIN / Password
+                      Change Access PIN
                     </h2>
                     <p className="text-xs text-brown-500">
                       3-Step verification to update system access code
@@ -223,7 +223,7 @@ export default function AdminPage() {
 
               <form onSubmit={handleChangePin} className="space-y-6">
                 
-                {/* STEP 1: Current Password */}
+                {/* STEP 1: Current PIN */}
                 <div className="p-4 rounded-xl bg-beige-50/70 border border-brown-100/80 space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-brown-800 tracking-wider uppercase flex items-center gap-2">
@@ -235,6 +235,8 @@ export default function AdminPage() {
                   <div className="relative mt-2">
                     <input
                       type={showCurrent ? 'text' : 'password'}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder="Enter active PIN (default: dayalwasi2024)"
@@ -252,7 +254,7 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* STEP 2: New Password */}
+                {/* STEP 2: New PIN */}
                 <div className="p-4 rounded-xl bg-beige-50/70 border border-brown-100/80 space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-brown-800 tracking-wider uppercase flex items-center gap-2">
@@ -264,9 +266,11 @@ export default function AdminPage() {
                   <div className="relative mt-2">
                     <input
                       type={showNew ? 'text' : 'password'}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Enter new 4+ character PIN or password"
+                      placeholder="Enter new 4+ digit PIN"
                       className="input-field pr-11 w-full bg-white text-base"
                       required
                     />
@@ -282,14 +286,14 @@ export default function AdminPage() {
                   {newPassword && (
                     <div className="pt-1 flex items-center gap-2 text-[11px]">
                       <span className="text-brown-400">Length:</span>
-                      <span className={`font-semibold ${newPassword.length >= 4 ? 'text-emerald-600' : 'text-amber-600'}`}>
-                        {newPassword.length} characters {newPassword.length >= 4 ? '✓' : '(minimum 4 required)'}
+                      <span className={`font-semibold ${newPassword.length >= 4 ? 'text-emerald-600' : 'text-gold-700'}`}>
+                        {newPassword.length} digits {newPassword.length >= 4 ? '✓' : '(minimum 4 required)'}
                       </span>
                     </div>
                   )}
                 </div>
 
-                {/* STEP 3: Confirm New Password */}
+                {/* STEP 3: Confirm New PIN */}
                 <div className="p-4 rounded-xl bg-beige-50/70 border border-brown-100/80 space-y-2">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-brown-800 tracking-wider uppercase flex items-center gap-2">
@@ -301,12 +305,14 @@ export default function AdminPage() {
                   <div className="relative mt-2">
                     <input
                       type={showConfirm ? 'text' : 'password'}
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Re-type new PIN to confirm"
                       className={`input-field pr-11 w-full bg-white text-base ${
                         isMatching ? 'border-emerald-500 focus:border-emerald-600' : ''
-                      } ${isMismatch ? 'border-amber-400' : ''}`}
+                      } ${isMismatch ? 'border-gold-400' : ''}`}
                       required
                     />
                     <button
@@ -325,7 +331,7 @@ export default function AdminPage() {
                     </div>
                   )}
                   {isMismatch && (
-                    <div className="pt-1 flex items-center gap-1.5 text-xs text-amber-600 font-medium">
+                    <div className="pt-1 flex items-center gap-1.5 text-xs text-gold-700 font-medium">
                       <AlertTriangle size={14} />
                       <span>Confirmation does not match new PIN yet.</span>
                     </div>
@@ -534,9 +540,11 @@ export default function AdminPage() {
               <div>
                 <input
                   type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={resetAuthPassword}
                   onChange={(e) => setResetAuthPassword(e.target.value)}
-                  placeholder="Enter current password to verify"
+                  placeholder="Enter current PIN to verify"
                   className="input-field w-full text-base"
                   autoFocus
                 />

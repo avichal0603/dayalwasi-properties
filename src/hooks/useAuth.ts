@@ -57,14 +57,14 @@ export function useAuth() {
 
   const login = useCallback(
     async (
-      password: string,
+      pin: string,
       rememberDevice: boolean = true
-    ): Promise<{ success: boolean; message?: string }> => {
+    ): Promise<{ success: boolean; message?: string; retryAfter?: number }> => {
       try {
         const res = await fetch('/api/auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password }),
+          body: JSON.stringify({ password: pin }),
         });
 
         const data = await res.json();
@@ -86,8 +86,12 @@ export function useAuth() {
           return { success: true };
         }
 
-        return { success: false, message: data.message || 'Incorrect password' };
-      } catch (err) {
+        return {
+          success: false,
+          message: data.message || 'Incorrect PIN',
+          retryAfter: data.retryAfter,
+        };
+      } catch {
         return { success: false, message: 'Authentication failed. Please check network connection.' };
       }
     },

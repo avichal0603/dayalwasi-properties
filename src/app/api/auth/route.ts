@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getAuthSettings, saveAuthSettings, verifyActivePassword } from '@/lib/authSettings';
+import {
+  getClientFingerprint,
+  checkRateLimit,
+  recordFailedLogin,
+  recordSuccessfulLogin,
+} from '@/lib/rateLimit';
 
 export async function GET() {
   try {
@@ -9,7 +15,7 @@ export async function GET() {
       hasCustomPin: Boolean(settings.customPin),
       updatedAt: settings.updatedAt,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch auth settings' }, { status: 500 });
   }
 }
@@ -18,12 +24,13 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { action, password, currentPassword, newPassword, authMode } = body;
+    const clientKey = getClientFingerprint(request);
 
     // Handle 3-step PIN change
     if (action === 'change-pin') {
       if (!currentPassword || !newPassword) {
         return NextResponse.json(
-          { success: false, message: 'Current and new password are required' },
+          { success: false, message: 'Current and new PIN are required' },
           { status: 400 }
         );
       }
@@ -31,21 +38,21 @@ export async function POST(request: Request) {
       const isValidCurrent = await verifyActivePassword(currentPassword);
       if (!isValidCurrent) {
         return NextResponse.json(
-          { success: false, message: 'Current password is incorrect' },
+          { success: false, message: 'Current PIN is incorrect' },
           { status: 401 }
         );
       }
 
       if (newPassword.trim().length < 4) {
         return NextResponse.json(
-          { success: false, message: 'New password must be at least 4 characters long' },
+          { success: false, message: 'New PIN must be at least 4 digits or characters long' },
           { status: 400 }
         );
       }
 
       if (newPassword.trim() === currentPassword.trim()) {
         return NextResponse.json(
-          { success: false, message: 'New password must be different from current password' },
+          { success: false, message: 'New PIN must be different from current PIN' },
           { status: 400 }
         );
       }
@@ -80,7 +87,7 @@ export async function POST(request: Request) {
       const isValid = await verifyActivePassword(currentPassword);
       if (!isValid) {
         return NextResponse.json(
-          { success: false, message: 'Current password is required to reset' },
+          { success: false, message: 'Current PIN is required to reset' },
           { status: 401 }
         );
       }
@@ -92,22 +99,69 @@ export async function POST(request: Request) {
       });
     }
 
-    // Default: Login verification
-    if (!password) {
-      return NextResponse.json({ success: false, message: 'Password is required' }, { status: 400 });
+    // --- Login Authentication with Rate Limiting ---
+    // 1. Check rate limit
+    const rateCheck = await checkRateLimit(clientKey);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          retryAfter: rateCheck.retryAfter,
+          message: `Too many failed attempts. Device locked. Please wait ${rateCheck.retryAfter}s.`,
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': String(rateCheck.retryAfter || 60),
+          },
+        }
+      );
     }
 
-    const isValid = await verifyActivePassword(password);
-    if (isValid) {
-      const settings = await getAuthSettings();
-      return NextResponse.json({
-        success: true,
-        authMode: settings.authMode,
-      }, { status: 200 });
-    } else {
-      return NextResponse.json({ success: false, message: 'Incorrect password' }, { status: 401 });
+    if (!password) {
+      return NextResponse.json({ success: false, message: 'PIN is required' }, { status: 400 });
     }
-  } catch (error) {
+
+    // 2. Verify PIN using constant-time comparison
+    const isValid = await verifyActivePassword(password);
+
+    if (isValid) {
+      // Clear failure history for this client
+      await recordSuccessfulLogin(clientKey);
+      const settings = await getAuthSettings();
+      return NextResponse.json(
+        {
+          success: true,
+          authMode: settings.authMode,
+        },
+        { status: 200 }
+      );
+    } else {
+      // Record failure and check if lockout threshold reached
+      const failResult = await recordFailedLogin(clientKey);
+
+      if (failResult.locked) {
+        return NextResponse.json(
+          {
+            success: false,
+            retryAfter: failResult.retryAfter,
+            message: `Too many failed attempts. Device locked for ${failResult.retryAfter}s.`,
+          },
+          {
+            status: 429,
+            headers: {
+              'Retry-After': String(failResult.retryAfter || 60),
+            },
+          }
+        );
+      }
+
+      return NextResponse.json(
+        { success: false, message: 'Incorrect access PIN' },
+        { status: 401 }
+      );
+    }
+  } catch {
     return NextResponse.json({ success: false, message: 'Bad request' }, { status: 400 });
   }
 }
