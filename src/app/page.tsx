@@ -101,7 +101,7 @@ export default function LoginPage() {
             </div>
           </div>
           <h1 className="text-3xl sm:text-4xl font-display font-bold text-brown-900 tracking-tight">
-            Dayalwasi
+            Dayalwasi &
           </h1>
           <div className="flex items-center justify-center gap-2 mt-1">
             <p className="text-xs font-semibold tracking-[0.25em] text-gold-600 uppercase">
