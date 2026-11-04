@@ -32,6 +32,7 @@ const config: Config = {
           700: '#482C1A',
           800: '#3C2415',
           900: '#2A1A0E',
+          950: '#1A0E08',
         },
         beige: {
           50: '#FFFDF8',
@@ -59,8 +60,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Playfair Display', 'Georgia', 'serif'],
+        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-playfair)', 'Playfair Display', 'Georgia', 'serif'],
       },
       boxShadow: {
         'gold': '0 4px 14px 0 rgba(201, 168, 76, 0.18)',
@@ -82,6 +83,7 @@ const config: Config = {
         'slide-in-left': 'slideInLeft 0.3s ease-out',
         'pulse-subtle': 'pulseSubtle 3s ease-in-out infinite',
         'float': 'float 4s ease-in-out infinite',
+        'shake': 'shake 0.5s ease-in-out',
       },
       keyframes: {
         fadeIn: {
@@ -103,6 +105,11 @@ const config: Config = {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-4px)' },
+        },
+        shake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '20%, 60%': { transform: 'translateX(-4px)' },
+          '40%, 80%': { transform: 'translateX(4px)' },
         },
       },
     },

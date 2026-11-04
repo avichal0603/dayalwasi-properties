@@ -6,6 +6,7 @@ import { useProperties } from '@/hooks/useProperties';
 import { DAYALBAGH_COLONIES, PROPERTY_TYPE_LABELS, AVAILABILITY_LABELS, DEFAULT_CENTER, DEFAULT_ZOOM } from '@/lib/constants';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Filter, X } from 'lucide-react';
+import { Spinner } from '@/components/ui/Spinner';
 import { Property } from '@/lib/types';
 
 export default function MapPage() {
@@ -33,14 +34,14 @@ export default function MapPage() {
 
   return (
     <DashboardLayout>
-      <div className="page-enter relative w-full h-[calc(100vh-64px)] flex flex-col md:flex-row overflow-hidden">
+      <div className="page-enter relative w-full h-[calc(100dvh-64px)] flex flex-col md:flex-row overflow-hidden">
         
         {/* Mobile Filter Toggle */}
-        <div className="md:hidden p-4 bg-white border-b border-gray-100 flex justify-between items-center z-10 shadow-sm">
-          <span className="font-semibold text-brown-800">Map Properties ({filteredProperties.length})</span>
+        <div className="md:hidden p-3.5 bg-white border-b border-brown-100 flex justify-between items-center z-10 shadow-sm shrink-0">
+          <span className="font-semibold text-brown-800 text-sm">Map Properties ({filteredProperties.length})</span>
           <button 
             onClick={() => setIsFilterOpen(!isFilterOpen)}
-            className="btn-outline flex items-center gap-2 py-1.5 px-3 text-sm"
+            className="btn-outline flex items-center gap-2 py-1 px-3 text-xs"
           >
             {isFilterOpen ? <X className="w-4 h-4" /> : <Filter className="w-4 h-4" />}
             {isFilterOpen ? 'Close' : 'Filters'}
@@ -51,7 +52,7 @@ export default function MapPage() {
         <div className={`
           premium-card bg-white h-full overflow-y-auto w-full md:w-[280px] flex-shrink-0 z-[500] md:z-20 transition-all duration-300
           ${isFilterOpen ? 'block' : 'hidden md:block'}
-          absolute md:relative top-[60px] md:top-0 left-0
+          absolute inset-x-0 top-12 bottom-0 md:relative md:inset-auto md:top-0 left-0
         `}>
           <div className="p-5">
             <div className="flex justify-between items-center mb-6 hidden md:flex">
@@ -112,7 +113,7 @@ export default function MapPage() {
               </button>
             </div>
             
-            <div className="mt-8 pt-6 border-t border-gray-100">
+            <div className="mt-8 pt-6 border-t border-brown-100">
               <p className="text-sm text-center text-brown-600">
                 <span className="font-bold text-gold-600 text-2xl block mb-1">{filteredProperties.length}</span>
                 Properties Found
@@ -122,10 +123,10 @@ export default function MapPage() {
         </div>
 
         {/* Map Area */}
-        <div className="flex-1 relative h-[calc(100vh-64px-60px)] md:h-full z-0">
+        <div className="flex-1 relative h-[calc(100dvh-64px-48px)] md:h-full z-0">
           {loading ? (
             <div className="h-full w-full flex items-center justify-center bg-beige-50">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold-500"></div>
+              <Spinner size="lg" label="Loading Dayalbagh map..." />
             </div>
           ) : (
             <PropertyMap 
@@ -139,14 +140,14 @@ export default function MapPage() {
           {/* Legend */}
           <div className="absolute bottom-6 right-6 z-[400] pointer-events-none">
             <div className="glass-card p-3 rounded-lg shadow-md bg-white/90 backdrop-blur-md text-xs pointer-events-auto">
-              <h4 className="font-semibold text-brown-800 mb-2 border-b border-gray-100 pb-1">Legend</h4>
+              <h4 className="font-semibold text-brown-800 mb-2 border-b border-brown-100 pb-1">Legend</h4>
               <div className="flex items-center gap-2 mb-1">
-                <div className="w-3 h-3 rounded-full bg-gold-600"></div>
-                <span className="text-gray-600">Available</span>
+                <div className="w-3 h-3 rounded-full bg-olive-600"></div>
+                <span className="text-brown-700 font-medium">Available</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-brown-600"></div>
-                <span className="text-gray-600">Sold / Selected</span>
+                <div className="w-3 h-3 rounded-full bg-beige-600"></div>
+                <span className="text-brown-600">Sold / Selected</span>
               </div>
             </div>
           </div>

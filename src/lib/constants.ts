@@ -47,10 +47,17 @@ export const AVAILABILITY_LABELS: Record<AvailabilityStatus, string> = {
 };
 
 export const AVAILABILITY_COLORS: Record<AvailabilityStatus, string> = {
-  available: 'bg-emerald-100 text-emerald-800',
-  sold: 'bg-red-100 text-red-800',
-  reserved: 'bg-amber-100 text-amber-800',
-  negotiation: 'bg-blue-100 text-blue-800',
+  available: 'bg-olive-100 text-olive-800 border-olive-300',
+  reserved: 'bg-gold-100 text-brown-800 border-gold-300',
+  negotiation: 'bg-brown-100 text-brown-700 border-brown-200',
+  sold: 'bg-beige-300 text-brown-500 border-beige-500',
+};
+
+export const AVAILABILITY_PIN_COLORS: Record<AvailabilityStatus, string> = {
+  available: '#4C5F48',
+  reserved: '#C9A84C',
+  negotiation: '#6B4226',
+  sold: '#9C8A6E',
 };
 
 export const CONSTRUCTION_LABELS: Record<ConstructionStatus, string> = {
@@ -83,13 +90,13 @@ export const CONTACT_ROLE_LABELS: Record<string, string> = {
 };
 
 export const CONTACT_ROLE_COLORS: Record<string, string> = {
-  broker: 'bg-purple-100 text-purple-800',
-  builder: 'bg-blue-100 text-blue-800',
-  lawyer: 'bg-amber-100 text-amber-800',
-  banker: 'bg-green-100 text-green-800',
-  government: 'bg-red-100 text-red-800',
-  client: 'bg-cyan-100 text-cyan-800',
-  other: 'bg-gray-100 text-gray-800',
+  broker: 'bg-gold-100 text-brown-800 border-gold-300',
+  builder: 'bg-brown-100 text-brown-800 border-brown-300',
+  lawyer: 'bg-olive-100 text-olive-800 border-olive-300',
+  banker: 'bg-beige-300 text-brown-800 border-beige-400',
+  government: 'bg-gold-200 text-brown-900 border-gold-400',
+  client: 'bg-olive-50 text-olive-900 border-olive-200',
+  other: 'bg-beige-200 text-brown-700 border-beige-300',
 };
 
 // --- Dayalbagh Colonies ---
@@ -146,6 +153,7 @@ export function formatPriceINR(price: number): string {
   return `₹${price.toLocaleString('en-IN')}`;
 }
 
-export function formatArea(gaj: number): string {
-  return `${gaj} गज (${gaj * GAJ_TO_SQFT} sq.ft.)`;
+export function formatArea(gaj: number, areaSqft?: number | null): string {
+  const sqft = areaSqft ?? Math.round(gaj * GAJ_TO_SQFT);
+  return `${gaj.toLocaleString('en-IN')} Gaj (${sqft.toLocaleString('en-IN')} sq ft)`;
 }

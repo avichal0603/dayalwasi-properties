@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
-import { Loader2 } from 'lucide-react';
+import { Spinner } from '../ui/Spinner';
 import RealEstateDock from '../dock/RealEstateDock';
 
 interface DashboardLayoutProps {
@@ -29,7 +29,7 @@ export function DashboardLayout({ children, title = 'Dashboard', onSearch }: Das
   if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-beige-50">
-        <Loader2 className="w-12 h-12 text-gold-600 animate-spin" />
+        <Spinner size="lg" label="Loading portfolio..." />
       </div>
     );
   }

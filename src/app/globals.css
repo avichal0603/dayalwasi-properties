@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -144,7 +142,7 @@
   /* Leaflet map overrides */
   .leaflet-container {
     @apply rounded-2xl;
-    font-family: 'Inter', sans-serif !important;
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif !important;
   }
 
   .leaflet-popup-content-wrapper {
@@ -154,7 +152,7 @@
 
   .leaflet-popup-content {
     margin: 10px 14px !important;
-    font-family: 'Inter', sans-serif !important;
+    font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif !important;
   }
 }
 
@@ -184,6 +182,11 @@
 
 /* Premium card hover */
 @layer components {
+  .property-card {
+    @apply bg-white/95 backdrop-blur-sm border border-beige-400/80 rounded-2xl shadow-card
+           min-w-0 break-words transition-all duration-300 ease-out;
+  }
+
   .premium-card {
     @apply bg-white/95 backdrop-blur-sm border border-beige-400/80 rounded-2xl shadow-card
            min-w-0 break-words transition-all duration-300 ease-out;

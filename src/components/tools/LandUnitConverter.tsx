@@ -3,10 +3,8 @@
 import React, { useState, useMemo } from 'react';
 import {
   Ruler,
-  ArrowRightLeft,
   Copy,
   Check,
-  Calculator,
   Info,
   Sparkles,
   TrendingUp,
@@ -19,7 +17,7 @@ export interface UnitDef {
   id: string;
   name: string;
   nameHindi: string;
-  gajFactor: number; // Multiply unit amount by this to get Gaj
+  gajFactor: number;
   description: string;
 }
 
@@ -165,9 +163,9 @@ export default function LandUnitConverter() {
   const brokerage2Pct = Math.round(totalCost * 0.02);
 
   return (
-    <div className="w-full text-brown-900 select-none">
-      {/* Header Tabs */}
-      <div className="flex items-center justify-between border-b border-brown-100 pb-3 mb-4">
+    <div className="w-full text-brown-900 select-none space-y-4">
+      {/* Header Tabs (Matching Calculator Theme) */}
+      <div className="flex items-center justify-between border-b border-brown-100 pb-3">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-gold-100 text-gold-700 flex items-center justify-center">
             <Ruler size={18} />
@@ -177,19 +175,19 @@ export default function LandUnitConverter() {
               Indian Land Unit Converter
             </h3>
             <p className="text-[11px] text-brown-500">
-              Agra & Western UP Regional Real Estate Standards
+              Agra &amp; Western UP Real Estate Standards
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1 bg-beige-100/80 p-1 rounded-xl border border-brown-200/60">
+        <div className="flex items-center gap-1 bg-brown-950/80 p-1 rounded-xl border border-gold-500/30 shadow-xs">
           <button
             type="button"
             onClick={() => setActiveTab('multi')}
             className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
               activeTab === 'multi'
-                ? 'bg-white text-gold-800 shadow-sm'
-                : 'text-brown-600 hover:text-brown-900'
+                ? 'bg-gradient-to-r from-gold-500 to-amber-600 text-white shadow-sm'
+                : 'text-beige-300 hover:text-white'
             }`}
           >
             Area Units
@@ -199,50 +197,65 @@ export default function LandUnitConverter() {
             onClick={() => setActiveTab('rate')}
             className={`px-3 py-1 rounded-lg text-xs font-semibold transition ${
               activeTab === 'rate'
-                ? 'bg-white text-gold-800 shadow-sm'
-                : 'text-brown-600 hover:text-brown-900'
+                ? 'bg-gradient-to-r from-gold-500 to-amber-600 text-white shadow-sm'
+                : 'text-beige-300 hover:text-white'
             }`}
           >
-            Price & Stamp
+            Price &amp; Stamp
           </button>
         </div>
       </div>
 
       {activeTab === 'multi' ? (
         <div className="space-y-4">
-          {/* Main Input Control Bar */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-r from-gold-50 via-white to-gold-50/40 border border-gold-200/80 shadow-sm">
-            <div className="text-[11px] font-bold text-brown-700 uppercase tracking-wider mb-2 flex items-center justify-between">
-              <span>Enter Value & Choose Base Unit</span>
-              <span className="text-gold-700 font-medium">1 Gaj = 9 Sq.Ft</span>
+          {/* Main Hero Display Card (Matching Standard & EMI Calculators) */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-brown-950 via-brown-900 to-brown-950 text-white shadow-md border border-gold-500/40 relative overflow-hidden space-y-3">
+            <div className="flex items-center justify-between text-[11px] font-bold text-gold-300 uppercase tracking-wider">
+              <span>Enter Land Area</span>
+              <span className="text-beige-300 font-medium">1 Gaj = 9 Sq.Ft</span>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="number"
-                min="0"
-                step="any"
-                value={inputVal}
-                onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Enter area..."
-                className="input-field text-lg font-bold text-brown-950 bg-white flex-1 !py-2"
-                autoFocus
-              />
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex-1 relative">
+                <input
+                  type="number"
+                  min="0"
+                  step="any"
+                  value={inputVal}
+                  onChange={(e) => setInputVal(e.target.value)}
+                  placeholder="Enter area..."
+                  className="w-full bg-transparent text-2xl sm:text-3xl font-display font-bold text-gold-300 placeholder:text-gold-300/30 border-b border-gold-400/40 pb-1 focus:outline-none focus:border-gold-300 tracking-tight"
+                  autoFocus
+                />
+              </div>
+
               <select
                 value={selectedUnit}
                 onChange={(e) => setSelectedUnit(e.target.value)}
-                className="input-field !py-2 !px-3 font-semibold text-xs bg-white text-brown-900 max-w-[170px]"
+                className="bg-white/10 text-gold-200 border border-gold-400/30 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-gold-400 cursor-pointer backdrop-blur-sm"
               >
                 {INDIAN_LAND_UNITS.map((u) => (
-                  <option key={u.id} value={u.id}>
+                  <option key={u.id} value={u.id} className="bg-brown-950 text-white">
                     {u.name} ({u.nameHindi})
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Quick Preset Buttons */}
-            <div className="flex flex-wrap items-center gap-1.5 mt-3 pt-2 border-t border-gold-200/40">
-              <span className="text-[10px] text-brown-400 font-semibold mr-1">Presets:</span>
+            {/* Equivalent live banner */}
+            <div className="pt-2 border-t border-white/10 flex items-center justify-between text-xs text-beige-300 flex-wrap gap-1">
+              <span>
+                Standard Dayalbagh Area:{' '}
+                <strong className="text-gold-300 font-bold">
+                  {currentGaj.toLocaleString('en-IN', { maximumFractionDigits: 2 })} Gaj
+                </strong>{' '}
+                <span className="text-beige-300/80">({Math.round(currentGaj * 9).toLocaleString('en-IN')} sq ft)</span>
+              </span>
+            </div>
+
+            {/* Quick Preset Buttons (Matching Calculator Styling) */}
+            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+              <span className="text-[10px] text-gold-300/80 font-semibold mr-1">Presets:</span>
               {[
                 { label: '50 Gaj', val: '50', unit: 'gaj' },
                 { label: '100 Gaj', val: '100', unit: 'gaj' },
@@ -259,7 +272,11 @@ export default function LandUnitConverter() {
                     setInputVal(p.val);
                     setSelectedUnit(p.unit);
                   }}
-                  className="px-2 py-0.5 rounded-md bg-white hover:bg-gold-100 text-brown-700 hover:text-gold-800 text-[11px] font-medium border border-brown-200/60 transition shadow-2xs"
+                  className={`px-2 py-0.5 rounded-lg text-[11px] font-semibold transition border ${
+                    inputVal === p.val && selectedUnit === p.unit
+                      ? 'bg-gold-500 text-white border-gold-400 shadow-sm'
+                      : 'bg-white/10 text-beige-200 hover:bg-white/20 hover:text-white border-white/15'
+                  }`}
                 >
                   {p.label}
                 </button>
@@ -268,7 +285,7 @@ export default function LandUnitConverter() {
           </div>
 
           {/* Converted Units Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[310px] overflow-y-auto pr-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-[300px] overflow-y-auto pr-1">
             {conversions.map((conv) => {
               const isSelected = conv.id === selectedUnit;
               const isCopied = copiedId === conv.id;
@@ -278,8 +295,8 @@ export default function LandUnitConverter() {
                   onClick={() => handleCopy(`${conv.display} ${conv.name}`, conv.id)}
                   className={`p-3 rounded-xl border transition-all cursor-pointer relative group flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-gold-50/80 border-gold-400 shadow-sm ring-1 ring-gold-400/40'
-                      : 'bg-white hover:bg-beige-50/70 border-brown-100/90 hover:border-gold-300'
+                      ? 'bg-gold-50/90 border-gold-500 shadow-sm ring-1 ring-gold-400/50'
+                      : 'bg-white hover:bg-beige-50/80 border-brown-200/80 hover:border-gold-300'
                   }`}
                 >
                   <div className="flex items-start justify-between">

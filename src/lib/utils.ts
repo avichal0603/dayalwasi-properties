@@ -2,7 +2,7 @@
 // Dayalwasi Properties — Utility Functions
 // ============================================
 
-import { GAJ_TO_SQFT } from './constants';
+import { GAJ_TO_SQFT, formatArea } from './constants';
 import type { Property, PropertyFilters } from './types';
 
 /**
@@ -134,7 +134,7 @@ export function generateShareText(property: Property): string {
   const lines = [
     `🏠 *${property.title}*`,
     `📍 ${property.colony}, ${property.address}`,
-    `📐 Area: ${property.area_gaj} गज (${property.area_sqft} sq.ft.)`,
+    `📐 Area: ${formatArea(property.area_gaj, property.area_sqft)}`,
     `🧭 Facing: ${property.facing.charAt(0).toUpperCase() + property.facing.slice(1)}`,
     `💰 Price: ₹${property.price.toLocaleString('en-IN')}`,
     property.bhk ? `🏗️ ${property.bhk}` : '',
@@ -164,4 +164,55 @@ export function debounce<T extends (...args: unknown[]) => unknown>(
  */
 export function cn(...classes: (string | boolean | undefined | null)[]): string {
   return classes.filter(Boolean).join(' ');
+}
+
+// --- Needs Attention Audit Helper ---
+
+export interface AttentionIssue {
+  type: 'no_images' | 'no_contact' | 'stale';
+  label: string;
+}
+
+export interface PropertyWithAttention {
+  property: Property;
+  issues: AttentionIssue[];
+}
+
+export function getPropertyAttentionIssues(property: Property): AttentionIssue[] {
+  // Sold properties don't need attention
+  if (property.availability === 'sold') return [];
+
+  const issues: AttentionIssue[] = [];
+
+  // Check images (empty array or missing)
+  if (!property.images || property.images.length === 0) {
+    issues.push({ type: 'no_images', label: 'No photos uploaded' });
+  }
+
+  // Check owner contact (empty or whitespace only)
+  if (!property.owner_contact || !property.owner_contact.trim()) {
+    issues.push({ type: 'no_contact', label: 'Missing owner contact' });
+  }
+
+  // Check stale: updated_at older than 30 days
+  if (property.updated_at) {
+    const updatedTime = new Date(property.updated_at).getTime();
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    if (updatedTime < thirtyDaysAgo) {
+      issues.push({ type: 'stale', label: 'Not updated in 30+ days' });
+    }
+  }
+
+  return issues;
+}
+
+export function getPropertiesNeedingAttention(properties: Property[]): PropertyWithAttention[] {
+  const result: PropertyWithAttention[] = [];
+  for (const property of properties) {
+    const issues = getPropertyAttentionIssues(property);
+    if (issues.length > 0) {
+      result.push({ property, issues });
+    }
+  }
+  return result;
 }
