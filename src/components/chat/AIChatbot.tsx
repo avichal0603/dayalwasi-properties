@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { MessageCircle, X, Send, Building2, MapPin, Sparkles, Bot } from 'lucide-react';
 import { Property, PropertyType } from '@/lib/types';
-import { formatPrice, PROPERTY_TYPE_LABELS, DAYALBAGH_COLONIES } from '@/lib/constants';
+import { formatPrice, PROPERTY_TYPE_LABELS, DAYALBAGH_COLONIES, formatArea } from '@/lib/constants';
 
 export interface Message {
   id: string;
@@ -279,7 +279,7 @@ export default function AIChatbot({
                         </div>
                         <div className="flex justify-between items-center text-sm">
                           <span className="font-bold text-gold-700">{formatPrice(prop.price)}</span>
-                          <span className="text-brown-600 text-xs font-medium">{prop.area_gaj} गज</span>
+                          <span className="text-brown-600 text-xs font-medium">{formatArea(prop.area_gaj, prop.area_sqft)}</span>
                         </div>
                       </Link>
                     ))}
@@ -372,7 +372,7 @@ export default function AIChatbot({
                         </div>
                         <div className="flex justify-between items-center text-sm">
                           <span className="font-bold text-gold-700">{formatPrice(prop.price)}</span>
-                          <span className="text-brown-600 text-xs font-medium">{prop.area_gaj} गज</span>
+                          <span className="text-brown-600 text-xs font-medium">{formatArea(prop.area_gaj, prop.area_sqft)}</span>
                         </div>
                       </Link>
                     ))}

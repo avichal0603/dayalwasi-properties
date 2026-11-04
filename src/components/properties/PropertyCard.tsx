@@ -9,6 +9,7 @@ import {
   AVAILABILITY_COLORS,
   PROPERTY_TYPE_LABELS,
   formatPrice,
+  formatArea,
 } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
@@ -45,7 +46,7 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
               "absolute top-3 right-3 px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] font-semibold rounded-full shadow-sm backdrop-blur-sm",
               property.availability === 'available'
                 ? "bg-olive-100/95 text-olive-900 border border-olive-300/60"
-                : (AVAILABILITY_COLORS[property.availability as keyof typeof AVAILABILITY_COLORS] || "bg-gray-100 text-gray-800")
+                : (AVAILABILITY_COLORS[property.availability as keyof typeof AVAILABILITY_COLORS] || "bg-beige-100 text-brown-800 border-beige-300")
             )}
           >
             {AVAILABILITY_LABELS[property.availability as keyof typeof AVAILABILITY_LABELS] || property.availability}
@@ -53,8 +54,8 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
         )}
 
         {property.drive_url && (
-          <div className="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-semibold rounded-full shadow-sm bg-white/95 text-amber-900 border border-amber-300 flex items-center gap-1 backdrop-blur-sm">
-            <FolderOpen className="w-3 h-3 text-amber-600" />
+          <div className="absolute top-3 left-3 px-2 py-0.5 text-[10px] font-semibold rounded-full shadow-sm bg-white/95 text-gold-900 border border-gold-300 flex items-center gap-1 backdrop-blur-sm">
+            <FolderOpen className="w-3 h-3 text-gold-600" />
             <span>Drive HD</span>
           </div>
         )}
@@ -72,7 +73,7 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
           </div>
           <div className="flex items-center min-w-0">
             <Ruler className="w-4 h-4 mr-2 text-gold-500 shrink-0" />
-            <span>{property.area_gaj} गज</span>
+            <span className="truncate">{formatArea(property.area_gaj, property.area_sqft)}</span>
           </div>
           {property.facing && (
             <div className="flex items-center min-w-0">

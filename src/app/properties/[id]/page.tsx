@@ -16,6 +16,7 @@ import {
   REGISTRY_LABELS,
   FACING_LABELS,
   formatPriceINR,
+  formatArea,
   GOOGLE_DRIVE_FOLDER_URL
 } from "@/lib/constants";
 import { gajToSqft, calcPricePerGaj, generateShareText } from "@/lib/utils";
@@ -156,7 +157,7 @@ export default function PropertyDetailPage() {
             <span className={`px-2.5 py-0.5 sm:px-3 sm:py-1 text-[11px] sm:text-xs font-semibold rounded-full shadow-sm ${
               property.availability === 'available'
                 ? "bg-olive-100/90 text-olive-900 border border-olive-300/60"
-                : (AVAILABILITY_COLORS[property.availability as keyof typeof AVAILABILITY_COLORS] || "bg-gray-100 text-gray-800")
+                : (AVAILABILITY_COLORS[property.availability as keyof typeof AVAILABILITY_COLORS] || "bg-beige-100 text-brown-800 border-beige-300")
             }`}>
               {AVAILABILITY_LABELS[property.availability as keyof typeof AVAILABILITY_LABELS] || property.availability}
             </span>
@@ -188,8 +189,7 @@ export default function PropertyDetailPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
                 <div className="min-w-0">
                   <p className="text-xs sm:text-sm text-brown-500 mb-0.5">Area</p>
-                  <p className="font-semibold text-brown-900 text-sm sm:text-base">{property.area_gaj} गज</p>
-                  <p className="text-[11px] sm:text-xs text-brown-400">{sqft.toFixed(0)} Sq Ft</p>
+                  <p className="font-semibold text-brown-900 text-sm sm:text-base">{formatArea(property.area_gaj, property.area_sqft)}</p>
                 </div>
                 {property.bhk && (
                   <div className="min-w-0">
@@ -276,7 +276,7 @@ export default function PropertyDetailPage() {
                 </div>
                 <div className="text-xs sm:text-sm text-brown-500 flex flex-wrap items-center justify-between gap-1.5 pt-1">
                   <span className="font-medium text-brown-700">{formatPriceINR(property.price)}</span>
-                  <span className="text-gold-700 font-semibold">₹{formatPriceINR(pricePerGaj)} / गज</span>
+                  <span className="text-gold-700 font-semibold">₹{formatPriceINR(pricePerGaj)} / Gaj</span>
                 </div>
               </div>
               
@@ -319,7 +319,7 @@ export default function PropertyDetailPage() {
             )}
 
             {/* Google Drive Media Section */}
-            <section className="glass-card p-6 border-gold-200/80 bg-gradient-to-br from-white to-amber-50/40 shadow-sm">
+            <section className="glass-card p-6 border-gold-200/80 bg-gradient-to-br from-white to-gold-50/40 shadow-sm">
               <div className="flex items-center gap-2 mb-2">
                 <FolderOpen className="w-5 h-5 text-gold-600" />
                 <h2 className="text-lg font-display font-bold text-brown-900">Google Drive Media</h2>

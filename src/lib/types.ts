@@ -101,11 +101,13 @@ export interface PropertyFilters {
 }
 
 export type SortOption =
+  | 'date_desc'
   | 'price_asc'
   | 'price_desc'
   | 'area_asc'
   | 'area_desc'
-  | 'date_desc'
+  | 'price_per_gaj_asc'
+  | 'price_per_gaj_desc'
   | 'date_asc'
   | 'colony';
 

@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 're
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Property } from '@/lib/types';
-import { DEFAULT_CENTER, DEFAULT_ZOOM, formatPriceINR } from '@/lib/constants';
+import { DEFAULT_CENTER, DEFAULT_ZOOM, formatPriceINR, formatArea } from '@/lib/constants';
 import Link from 'next/link';
 
 const createCustomIcon = (isSelected: boolean, isAvailable: boolean) => {
@@ -177,10 +177,10 @@ export default function PropertyMapInner({
                   </div>
                 )}
                 <h3 className="font-display font-semibold text-brown-900 text-sm truncate">{property.title}</h3>
-                <p className="text-xs text-gray-500 mb-1">{property.colony}, Dayalbagh</p>
+                <p className="text-xs text-brown-500 mb-1">{property.colony}, Dayalbagh</p>
                 <div className="flex items-center justify-between mb-2">
                   <p className="font-bold text-gold-600 text-sm">{formatPriceINR(property.price)}</p>
-                  <p className="text-xs text-brown-600 font-medium">{property.area_gaj} गज</p>
+                  <p className="text-xs text-brown-600 font-medium">{formatArea(property.area_gaj, property.area_sqft)}</p>
                 </div>
                 
                 <div className="flex flex-col gap-1.5 mt-2">

@@ -67,11 +67,13 @@ export const CONSTRUCTION_LABELS: Record<ConstructionStatus, string> = {
 };
 
 export const SORT_LABELS: Record<SortOption, string> = {
+  date_desc: 'Newest First',
   price_asc: 'Price: Low to High',
   price_desc: 'Price: High to Low',
   area_asc: 'Area: Small to Large',
   area_desc: 'Area: Large to Small',
-  date_desc: 'Newest First',
+  price_per_gaj_asc: 'Price / Gaj: Low to High',
+  price_per_gaj_desc: 'Price / Gaj: High to Low',
   date_asc: 'Oldest First',
   colony: 'Colony Name',
 };

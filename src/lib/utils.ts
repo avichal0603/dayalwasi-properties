@@ -100,29 +100,38 @@ export function filterProperties(
     result = result.filter((p) => p.area_gaj <= filters.max_area!);
   }
 
-  // Sorting
-  if (filters.sort_by) {
-    result.sort((a, b) => {
-      switch (filters.sort_by) {
-        case 'price_asc':
-          return a.price - b.price;
-        case 'price_desc':
-          return b.price - a.price;
-        case 'area_asc':
-          return a.area_gaj - b.area_gaj;
-        case 'area_desc':
-          return b.area_gaj - a.area_gaj;
-        case 'date_desc':
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-        case 'date_asc':
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        case 'colony':
-          return a.colony.localeCompare(b.colony);
-        default:
-          return 0;
+  // Sorting (defaults to date_desc if none specified)
+  const sortBy = filters.sort_by || 'date_desc';
+  result.sort((a, b) => {
+    switch (sortBy) {
+      case 'price_asc':
+        return a.price - b.price;
+      case 'price_desc':
+        return b.price - a.price;
+      case 'area_asc':
+        return a.area_gaj - b.area_gaj;
+      case 'area_desc':
+        return b.area_gaj - a.area_gaj;
+      case 'price_per_gaj_asc': {
+        const ppgA = a.price_per_gaj || calcPricePerGaj(a.price, a.area_gaj);
+        const ppgB = b.price_per_gaj || calcPricePerGaj(b.price, b.area_gaj);
+        return ppgA - ppgB;
       }
-    });
-  }
+      case 'price_per_gaj_desc': {
+        const ppgA = a.price_per_gaj || calcPricePerGaj(a.price, a.area_gaj);
+        const ppgB = b.price_per_gaj || calcPricePerGaj(b.price, b.area_gaj);
+        return ppgB - ppgA;
+      }
+      case 'date_desc':
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      case 'date_asc':
+        return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      case 'colony':
+        return a.colony.localeCompare(b.colony);
+      default:
+        return 0;
+    }
+  });
 
   return result;
 }
