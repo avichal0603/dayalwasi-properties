@@ -64,7 +64,7 @@ export function useAuth() {
         const res = await fetch('/api/auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password: pin }),
+          body: JSON.stringify({ pin }),
         });
 
         const data = await res.json();
@@ -106,8 +106,8 @@ export function useAuth() {
 
   const changePin = useCallback(
     async (
-      currentPassword: string,
-      newPassword: string
+      currentPin: string,
+      newPin: string
     ): Promise<{ success: boolean; message: string }> => {
       try {
         const res = await fetch('/api/auth', {
@@ -115,8 +115,8 @@ export function useAuth() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'change-pin',
-            currentPassword,
-            newPassword,
+            currentPin,
+            newPin,
           }),
         });
 
@@ -125,7 +125,7 @@ export function useAuth() {
           success: res.ok && Boolean(data.success),
           message: data.message || (res.ok ? 'PIN changed successfully' : 'Failed to change PIN'),
         };
-      } catch (err) {
+      } catch {
         return {
           success: false,
           message: 'Network error while attempting to change PIN',
@@ -163,14 +163,14 @@ export function useAuth() {
   }, []);
 
   const resetPin = useCallback(
-    async (currentPassword: string): Promise<{ success: boolean; message: string }> => {
+    async (currentPin: string): Promise<{ success: boolean; message: string }> => {
       try {
         const res = await fetch('/api/auth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             action: 'reset-pin',
-            currentPassword,
+            currentPin,
           }),
         });
 

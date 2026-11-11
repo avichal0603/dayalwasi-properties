@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
-import { getAuthSettings, saveAuthSettings, verifyActivePassword } from '@/lib/authSettings';
+import {
+  DEFAULT_FALLBACK_PIN,
+  getAuthSettings,
+  saveAuthSettings,
+  verifyActivePin,
+} from '@/lib/authSettings';
 import {
   getClientFingerprint,
   checkRateLimit,
   recordFailedLogin,
   recordSuccessfulLogin,
 } from '@/lib/rateLimit';
+
+const NUMERIC_PIN_REGEX = /^\d{4,12}$/;
 
 export async function GET() {
   try {
@@ -23,19 +30,19 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { action, password, currentPassword, newPassword, authMode } = body;
+    const { action, pin, currentPin, newPin, authMode } = body;
     const clientKey = getClientFingerprint(request);
 
     // Handle 3-step PIN change
     if (action === 'change-pin') {
-      if (!currentPassword || !newPassword) {
+      if (!currentPin || !newPin) {
         return NextResponse.json(
           { success: false, message: 'Current and new PIN are required' },
           { status: 400 }
         );
       }
 
-      const isValidCurrent = await verifyActivePassword(currentPassword);
+      const isValidCurrent = await verifyActivePin(String(currentPin));
       if (!isValidCurrent) {
         return NextResponse.json(
           { success: false, message: 'Current PIN is incorrect' },
@@ -43,21 +50,22 @@ export async function POST(request: Request) {
         );
       }
 
-      if (newPassword.trim().length < 4) {
+      const trimmedNewPin = String(newPin).trim();
+      if (!NUMERIC_PIN_REGEX.test(trimmedNewPin)) {
         return NextResponse.json(
-          { success: false, message: 'New PIN must be at least 4 digits or characters long' },
+          { success: false, message: 'New PIN must be 4 to 12 digits (numbers only)' },
           { status: 400 }
         );
       }
 
-      if (newPassword.trim() === currentPassword.trim()) {
+      if (trimmedNewPin === String(currentPin).trim()) {
         return NextResponse.json(
           { success: false, message: 'New PIN must be different from current PIN' },
           { status: 400 }
         );
       }
 
-      const saved = await saveAuthSettings({ customPin: newPassword.trim() });
+      const saved = await saveAuthSettings({ customPin: trimmedNewPin });
       if (!saved) {
         return NextResponse.json(
           { success: false, message: 'Failed to save new PIN to database' },
@@ -84,10 +92,17 @@ export async function POST(request: Request) {
 
     // Handle reset to factory default PIN
     if (action === 'reset-pin') {
-      const isValid = await verifyActivePassword(currentPassword);
-      if (!isValid) {
+      if (!currentPin) {
         return NextResponse.json(
           { success: false, message: 'Current PIN is required to reset' },
+          { status: 400 }
+        );
+      }
+
+      const isValid = await verifyActivePin(String(currentPin));
+      if (!isValid) {
+        return NextResponse.json(
+          { success: false, message: 'Current PIN is incorrect' },
           { status: 401 }
         );
       }
@@ -95,12 +110,11 @@ export async function POST(request: Request) {
       await saveAuthSettings({ customPin: null });
       return NextResponse.json({
         success: true,
-        message: 'PIN successfully reset to default factory code (dayalwasi2024)',
+        message: `PIN successfully reset to default factory PIN (${DEFAULT_FALLBACK_PIN})`,
       });
     }
 
     // --- Login Authentication with Rate Limiting ---
-    // 1. Check rate limit
     const rateCheck = await checkRateLimit(clientKey);
     if (!rateCheck.allowed) {
       return NextResponse.json(
@@ -118,15 +132,14 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!password) {
+    if (!pin) {
       return NextResponse.json({ success: false, message: 'PIN is required' }, { status: 400 });
     }
 
-    // 2. Verify PIN using constant-time comparison
-    const isValid = await verifyActivePassword(password);
+    // Verify PIN using constant-time comparison
+    const isValid = await verifyActivePin(String(pin));
 
     if (isValid) {
-      // Clear failure history for this client
       await recordSuccessfulLogin(clientKey);
       const settings = await getAuthSettings();
       return NextResponse.json(
@@ -137,7 +150,6 @@ export async function POST(request: Request) {
         { status: 200 }
       );
     } else {
-      // Record failure and check if lockout threshold reached
       const failResult = await recordFailedLogin(clientKey);
 
       if (failResult.locked) {

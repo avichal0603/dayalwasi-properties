@@ -130,19 +130,22 @@ export default function LoginPage() {
               </div>
               <input
                 type={showPin ? 'text' : 'password'}
+                name="pin"
                 inputMode="numeric"
                 pattern="[0-9]*"
+                maxLength={12}
                 disabled={isLocked}
                 value={pin}
                 onChange={(e) => {
-                  setPin(e.target.value);
+                  setPin(e.target.value.replace(/\D/g, ''));
                   if (error) setError('');
                 }}
-                placeholder="Enter access PIN"
+                placeholder="Enter numeric PIN"
+                aria-label="Access PIN"
                 className="input-field pl-10 pr-11 w-full text-base tracking-widest disabled:opacity-50 disabled:bg-beige-100"
                 required
                 autoFocus
-                autoComplete="current-password"
+                autoComplete="one-time-code"
               />
               <button
                 type="button"

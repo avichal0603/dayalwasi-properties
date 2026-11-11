@@ -2,9 +2,10 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { LayoutDashboard, Building2, Plus, Map as MapIcon, Users, LogOut, X, FolderOpen, ExternalLink, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Building2, Plus, Map as MapIcon, Users, LogOut, X, FolderOpen, ExternalLink, ShieldCheck, Smartphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GOOGLE_DRIVE_FOLDER_URL } from '@/lib/constants';
+import { usePwaInstall } from '@/components/pwa/PwaProvider';
 
 interface SidebarProps {
   currentPath: string;
@@ -23,6 +24,9 @@ const navItems = [
 ];
 
 export function Sidebar({ currentPath, onLogout, isOpen, onClose }: SidebarProps) {
+  const { isStandalone, canInstallNative, isIos, isAndroid, isMacSafari, promptInstall } = usePwaInstall();
+  const showInstallOption = !isStandalone && (canInstallNative || isIos || isAndroid || isMacSafari);
+
   return (
     <>
       {/* Mobile overlay */}
@@ -35,8 +39,8 @@ export function Sidebar({ currentPath, onLogout, isOpen, onClose }: SidebarProps
 
       {/* Sidebar */}
       <div className={cn(
-        "fixed inset-y-0 left-0 z-50 w-[260px] bg-gradient-brown text-white transition-transform duration-300 ease-in-out flex flex-col",
-        "lg:translate-x-0 lg:static lg:h-screen",
+        "fixed inset-y-0 left-0 z-50 w-[260px] bg-gradient-brown text-white transition-transform duration-300 ease-in-out flex flex-col pt-[env(safe-area-inset-top,0px)] lg:pt-0",
+        "lg:translate-x-0 lg:static lg:h-[100dvh]",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Logo Area */}
@@ -60,7 +64,7 @@ export function Sidebar({ currentPath, onLogout, isOpen, onClose }: SidebarProps
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="lg:hidden text-beige-200 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+          <button onClick={onClose} aria-label="Close navigation menu" className="lg:hidden text-beige-200 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -103,7 +107,20 @@ export function Sidebar({ currentPath, onLogout, isOpen, onClose }: SidebarProps
         </nav>
 
         {/* Bottom */}
-        <div className="p-4 border-t border-white/10 shrink-0 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
+        <div className="p-4 border-t border-white/10 shrink-0 space-y-1.5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px))]">
+          {showInstallOption && (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                promptInstall();
+              }}
+              className="flex items-center gap-3 px-4 py-2.5 w-full text-left text-gold-300 hover:bg-white/10 hover:text-gold-200 rounded-lg transition-colors border border-gold-400/25 bg-white/5"
+            >
+              <Smartphone size={18} className="text-gold-400 shrink-0" />
+              <span className="font-semibold text-sm">Install Mobile App</span>
+            </button>
+          )}
           <button
             onClick={onLogout}
             className="flex items-center gap-3 px-4 py-3 w-full text-left text-beige-100 hover:bg-white/5 hover:text-white rounded-lg transition-colors"

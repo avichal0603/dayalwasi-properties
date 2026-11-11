@@ -20,17 +20,20 @@ import {
   HardDrive,
   Info,
   LogOut,
+  Download,
 } from 'lucide-react';
 import { GOOGLE_DRIVE_FOLDER_URL } from '@/lib/constants';
+import { usePwaInstall } from '@/components/pwa/PwaProvider';
 import toast from 'react-hot-toast';
 
 export default function AdminPage() {
   const { authMode, changePin, updateAuthPreference, resetPin, logout } = useAuth();
+  const { isStandalone, canInstallNative, isIos, promptInstall, openGuide } = usePwaInstall();
 
-  // 3-Step Password Change State
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  // 3-Step PIN Change State
+  const [currentPin, setCurrentPin] = useState('');
+  const [newPin, setNewPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
 
   // Visibility toggles for each input
   const [showCurrent, setShowCurrent] = useState(false);
@@ -45,7 +48,7 @@ export default function AdminPage() {
   const [currentMode, setCurrentMode] = useState<AuthMode>('cache');
   const [isUpdatingMode, setIsUpdatingMode] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
-  const [resetAuthPassword, setResetAuthPassword] = useState('');
+  const [resetAuthPin, setResetAuthPin] = useState('');
 
   useEffect(() => {
     setCurrentMode(authMode);
@@ -58,41 +61,41 @@ export default function AdminPage() {
     setSuccessMessage('');
 
     // Step 1 validation: Current PIN
-    if (!currentPassword.trim()) {
+    if (!currentPin.trim()) {
       setErrorMessage('Please enter your current PIN.');
       return;
     }
 
-    // Step 2 validation: New PIN requirements
-    if (newPassword.trim().length < 4) {
-      setErrorMessage('New PIN must be at least 4 digits or characters long.');
+    // Step 2 validation: New numeric PIN requirements
+    if (!/^\d{4,12}$/.test(newPin.trim())) {
+      setErrorMessage('New PIN must be 4 to 12 digits (numbers only).');
       return;
     }
 
-    if (newPassword.trim() === currentPassword.trim()) {
+    if (newPin.trim() === currentPin.trim()) {
       setErrorMessage('New PIN cannot be identical to your current PIN.');
       return;
     }
 
     // Step 3 validation: Confirmation match
-    if (newPassword.trim() !== confirmPassword.trim()) {
+    if (newPin.trim() !== confirmPin.trim()) {
       setErrorMessage('Confirm PIN does not match the new PIN.');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const res = await changePin(currentPassword.trim(), newPassword.trim());
+      const res = await changePin(currentPin.trim(), newPin.trim());
       if (res.success) {
         setSuccessMessage('Access PIN successfully updated! System has synchronized your new credentials.');
         toast.success('Access PIN updated successfully!');
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
+        setCurrentPin('');
+        setNewPin('');
+        setConfirmPin('');
       } else {
         setErrorMessage(res.message || 'Failed to update PIN. Please verify your current PIN.');
       }
-    } catch (err) {
+    } catch {
       setErrorMessage('An unexpected error occurred while saving.');
     } finally {
       setIsSubmitting(false);
@@ -113,7 +116,7 @@ export default function AdminPage() {
             : 'Device cached: Fast 1-click access active on this device.'
         );
       }
-    } catch (err) {
+    } catch {
       toast.error('Could not update session setting');
     } finally {
       setIsUpdatingMode(false);
@@ -122,13 +125,13 @@ export default function AdminPage() {
 
   // Factory reset PIN
   const handleFactoryReset = async () => {
-    if (!resetAuthPassword.trim()) return;
+    if (!resetAuthPin.trim()) return;
     try {
-      const res = await resetPin(resetAuthPassword.trim());
+      const res = await resetPin(resetAuthPin.trim());
       if (res.success) {
-        toast.success('PIN reset to factory default (dayalwasi2024)');
+        toast.success('PIN reset to factory default (0690)');
         setShowResetModal(false);
-        setResetAuthPassword('');
+        setResetAuthPin('');
       } else {
         toast.error(res.message || 'Incorrect PIN verification');
       }
@@ -137,8 +140,8 @@ export default function AdminPage() {
     }
   };
 
-  const isMatching = Boolean(newPassword && confirmPassword && newPassword === confirmPassword);
-  const isMismatch = Boolean(confirmPassword && newPassword !== confirmPassword);
+  const isMatching = Boolean(newPin && confirmPin && newPin === confirmPin);
+  const isMismatch = Boolean(confirmPin && newPin !== confirmPin);
 
   return (
     <DashboardLayout title="Admin & Security">
@@ -181,7 +184,7 @@ export default function AdminPage() {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Left Column: 3-Step Password Change Form (7 cols) */}
+          {/* Left Column: 3-Step PIN Change Form (7 cols) */}
           <div className="lg:col-span-7">
             <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-brown-100 relative overflow-hidden">
               <div className="flex items-center justify-between border-b border-brown-100/80 pb-5 mb-6">
@@ -194,7 +197,7 @@ export default function AdminPage() {
                       Change Access PIN
                     </h2>
                     <p className="text-xs text-brown-500">
-                      3-Step verification to update system access code
+                      3-Step verification to update system access PIN
                     </p>
                   </div>
                 </div>
@@ -235,12 +238,15 @@ export default function AdminPage() {
                   <div className="relative mt-2">
                     <input
                       type={showCurrent ? 'text' : 'password'}
+                      name="current-pin"
                       inputMode="numeric"
                       pattern="[0-9]*"
-                      value={currentPassword}
-                      onChange={(e) => setCurrentPassword(e.target.value)}
-                      placeholder="Enter active PIN (default: dayalwasi2024)"
-                      className="input-field pr-11 w-full bg-white text-base"
+                      maxLength={12}
+                      autoComplete="off"
+                      value={currentPin}
+                      onChange={(e) => setCurrentPin(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Enter active PIN (default: 0690)"
+                      className="input-field pr-11 w-full bg-white text-base tracking-widest"
                       required
                     />
                     <button
@@ -248,6 +254,7 @@ export default function AdminPage() {
                       onClick={() => setShowCurrent((p) => !p)}
                       className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-500 hover:text-brown-800 transition"
                       tabIndex={-1}
+                      aria-label={showCurrent ? 'Hide current PIN' : 'Show current PIN'}
                     >
                       {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -266,12 +273,15 @@ export default function AdminPage() {
                   <div className="relative mt-2">
                     <input
                       type={showNew ? 'text' : 'password'}
+                      name="new-pin"
                       inputMode="numeric"
                       pattern="[0-9]*"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Enter new 4+ digit PIN"
-                      className="input-field pr-11 w-full bg-white text-base"
+                      maxLength={12}
+                      autoComplete="off"
+                      value={newPin}
+                      onChange={(e) => setNewPin(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Enter new 4–12 digit PIN"
+                      className="input-field pr-11 w-full bg-white text-base tracking-widest"
                       required
                     />
                     <button
@@ -279,15 +289,16 @@ export default function AdminPage() {
                       onClick={() => setShowNew((p) => !p)}
                       className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-500 hover:text-brown-800 transition"
                       tabIndex={-1}
+                      aria-label={showNew ? 'Hide new PIN' : 'Show new PIN'}
                     >
                       {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
-                  {newPassword && (
+                  {newPin && (
                     <div className="pt-1 flex items-center gap-2 text-[11px]">
                       <span className="text-brown-500">Length:</span>
-                      <span className={`font-semibold ${newPassword.length >= 4 ? 'text-emerald-600' : 'text-gold-700'}`}>
-                        {newPassword.length} digits {newPassword.length >= 4 ? '✓' : '(minimum 4 required)'}
+                      <span className={`font-semibold ${newPin.length >= 4 ? 'text-emerald-600' : 'text-gold-700'}`}>
+                        {newPin.length} digits {newPin.length >= 4 ? '✓' : '(minimum 4 required)'}
                       </span>
                     </div>
                   )}
@@ -305,12 +316,15 @@ export default function AdminPage() {
                   <div className="relative mt-2">
                     <input
                       type={showConfirm ? 'text' : 'password'}
+                      name="confirm-pin"
                       inputMode="numeric"
                       pattern="[0-9]*"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Re-type new PIN to confirm"
-                      className={`input-field pr-11 w-full bg-white text-base ${
+                      maxLength={12}
+                      autoComplete="off"
+                      value={confirmPin}
+                      onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, ''))}
+                      placeholder="Re-type new numeric PIN to confirm"
+                      className={`input-field pr-11 w-full bg-white text-base tracking-widest ${
                         isMatching ? 'border-emerald-500 focus:border-emerald-600' : ''
                       } ${isMismatch ? 'border-gold-400' : ''}`}
                       required
@@ -320,6 +334,7 @@ export default function AdminPage() {
                       onClick={() => setShowConfirm((p) => !p)}
                       className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-brown-500 hover:text-brown-800 transition"
                       tabIndex={-1}
+                      aria-label={showConfirm ? 'Hide confirm PIN' : 'Show confirm PIN'}
                     >
                       {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -341,7 +356,7 @@ export default function AdminPage() {
                 {/* Submit button */}
                 <button
                   type="submit"
-                  disabled={isSubmitting || !currentPassword || !newPassword || !confirmPassword || isMismatch}
+                  disabled={isSubmitting || !currentPin || !newPin || !confirmPin || isMismatch}
                   className="btn-gold w-full flex items-center justify-center gap-2 py-3 text-sm font-semibold shadow-md disabled:opacity-50 transition"
                 >
                   {isSubmitting ? (
@@ -505,6 +520,57 @@ export default function AdminPage() {
               </a>
             </div>
 
+            {/* Mobile & Desktop App (PWA) Card */}
+            <div className="bg-white rounded-2xl p-6 sm:p-7 shadow-sm border border-brown-100 space-y-4">
+              <div className="flex items-center justify-between border-b border-brown-100/80 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-brown-950 border border-gold-400/50 flex items-center justify-center text-gold-300 font-display font-bold text-sm">
+                    D
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-brown-900 text-base">
+                      Mobile &amp; Desktop App
+                    </h3>
+                    <p className="text-xs text-brown-500">
+                      Install on iPhone, Android &amp; MacBook
+                    </p>
+                  </div>
+                </div>
+                {isStandalone && (
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-olive-100 text-olive-800 border border-olive-300">
+                    Installed
+                  </span>
+                )}
+              </div>
+
+              {isStandalone ? (
+                <div className="p-3.5 rounded-xl bg-olive-50 border border-olive-200 flex items-center gap-2.5 text-olive-900 text-xs font-medium">
+                  <CheckCircle2 size={16} className="text-olive-700 shrink-0" />
+                  <span>Running natively in standalone app mode with automatic updates enabled.</span>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-xs text-brown-600 leading-relaxed">
+                    Add Dayalwasi Properties to your Home Screen or Dock for instant full-screen access without browser toolbars.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={canInstallNative ? promptInstall : openGuide}
+                    className="btn-gold w-full flex items-center justify-center gap-2 text-xs py-2.5"
+                  >
+                    <Download size={15} />
+                    <span>
+                      {canInstallNative
+                        ? 'Install App on Device'
+                        : isIos
+                        ? 'How to Add on iPhone'
+                        : 'Install App Instructions'}
+                    </span>
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* Cloud Status Info */}
             <div className="p-4 rounded-2xl bg-white border border-brown-100 text-xs text-brown-500 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -529,23 +595,26 @@ export default function AdminPage() {
                   <h3 className="font-display font-bold text-brown-900 text-base">
                     Reset to Factory PIN?
                   </h3>
-                  <p className="text-xs text-brown-500">Restore default code: dayalwasi2024</p>
+                  <p className="text-xs text-brown-500">Restore default PIN: 0690</p>
                 </div>
               </div>
 
               <p className="text-xs text-brown-600 leading-relaxed">
-                This will reset your customized PIN back to the default factory PIN (<code className="bg-brown-100 px-1 py-0.5 rounded font-mono text-brown-800">dayalwasi2024</code>). Please enter your current PIN to confirm:
+                This will reset your customized PIN back to the default factory PIN (<code className="bg-brown-100 px-1 py-0.5 rounded font-mono text-brown-800">0690</code>). Please enter your current PIN to confirm:
               </p>
 
               <div>
                 <input
                   type="password"
+                  name="reset-pin"
                   inputMode="numeric"
                   pattern="[0-9]*"
-                  value={resetAuthPassword}
-                  onChange={(e) => setResetAuthPassword(e.target.value)}
+                  maxLength={12}
+                  autoComplete="off"
+                  value={resetAuthPin}
+                  onChange={(e) => setResetAuthPin(e.target.value.replace(/\D/g, ''))}
                   placeholder="Enter current PIN to verify"
-                  className="input-field w-full text-base"
+                  className="input-field w-full text-base tracking-widest"
                   autoFocus
                 />
               </div>
@@ -555,7 +624,7 @@ export default function AdminPage() {
                   type="button"
                   onClick={() => {
                     setShowResetModal(false);
-                    setResetAuthPassword('');
+                    setResetAuthPin('');
                   }}
                   className="px-4 py-2 rounded-xl text-xs font-semibold text-brown-600 hover:bg-brown-100 transition"
                 >
@@ -564,7 +633,7 @@ export default function AdminPage() {
                 <button
                   type="button"
                   onClick={handleFactoryReset}
-                  disabled={!resetAuthPassword.trim()}
+                  disabled={!resetAuthPin.trim()}
                   className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition shadow"
                 >
                   Confirm Reset to Default

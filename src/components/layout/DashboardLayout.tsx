@@ -35,14 +35,14 @@ export function DashboardLayout({ children, title = 'Dashboard', onSearch }: Das
   }
 
   return (
-    <div className="flex h-screen bg-beige-100 overflow-hidden">
+    <div className="flex h-[100dvh] bg-beige-100 overflow-hidden">
       <Sidebar 
         currentPath={pathname} 
         onLogout={logout} 
         isOpen={isSidebarOpen} 
         onClose={() => setIsSidebarOpen(false)} 
       />
-      <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
+      <div className="flex-1 flex flex-col h-[100dvh] overflow-hidden relative">
         <Header 
           title={title} 
           onMenuClick={() => setIsSidebarOpen(true)} 

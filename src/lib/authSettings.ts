@@ -6,7 +6,7 @@ import { supabase } from './supabase';
 import { secureTimingEqual } from './rateLimit';
 
 export const SYSTEM_CONFIG_ID = '00000000-0000-0000-0000-000000000001';
-export const DEFAULT_FALLBACK_PIN = 'dayalwasi2024';
+export const DEFAULT_FALLBACK_PIN = '0690';
 
 export interface AuthSettings {
   customPin: string | null;
@@ -103,10 +103,10 @@ export async function saveAuthSettings(
 }
 
 /**
- * Verify if provided password matches active PIN (custom or env fallback).
+ * Verify if provided numeric PIN matches active PIN (custom or env/default fallback).
  */
-export async function verifyActivePassword(password: string): Promise<boolean> {
+export async function verifyActivePin(pin: string): Promise<boolean> {
   const settings = await getAuthSettings();
-  const activePin = settings.customPin || process.env.APP_PASSWORD || DEFAULT_FALLBACK_PIN;
-  return secureTimingEqual(password.trim(), activePin.trim());
+  const activePin = settings.customPin || process.env.APP_PIN || DEFAULT_FALLBACK_PIN;
+  return secureTimingEqual(pin.trim(), activePin.trim());
 }
