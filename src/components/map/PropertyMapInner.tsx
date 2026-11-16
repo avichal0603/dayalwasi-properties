@@ -202,7 +202,7 @@ export default function PropertyMapInner({
                 </p>
 
                 <div className="flex items-center justify-between mb-2.5 bg-beige-50/90 p-2 rounded-lg border border-beige-200/80">
-                  <p className="font-bold font-display text-gold-700 text-sm">
+                  <p className="font-bold font-sans text-gold-700 text-sm">
                     {formatPrice(property.price)}
                   </p>
                   <p className="text-xs text-brown-700 font-medium">

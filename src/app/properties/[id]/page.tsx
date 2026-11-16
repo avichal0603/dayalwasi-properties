@@ -165,7 +165,7 @@ export default function PropertyDetailPage() {
               {PROPERTY_TYPE_LABELS[property.property_type as keyof typeof PROPERTY_TYPE_LABELS] || property.property_type}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-brown-900 mb-2 break-words">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-sans font-bold text-brown-900 mb-2 break-words">
             {property.title}
           </h1>
           <div className="flex items-center text-brown-600 text-sm sm:text-base">
@@ -271,7 +271,7 @@ export default function PropertyDetailPage() {
             <section className="glass-card p-4 sm:p-6 border-2 border-gold-200 bg-gradient-to-b from-white to-beige-50 shadow-sm min-w-0">
               <h2 className="text-base sm:text-lg font-display font-bold text-brown-900 mb-4 sm:mb-6 border-b border-gold-100 pb-3 sm:pb-4">Financial Details</h2>
               <div className="mb-4 sm:mb-6">
-                <div className="text-2xl sm:text-3xl font-display font-bold text-gold-600 mb-1 truncate">
+                <div className="text-2xl sm:text-3xl font-sans font-bold text-gold-600 mb-1 truncate">
                   {formatPrice(property.price)}
                 </div>
                 <div className="text-xs sm:text-sm text-brown-500 flex flex-wrap items-center justify-between gap-1.5 pt-1">

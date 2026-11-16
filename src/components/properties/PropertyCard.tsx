@@ -84,7 +84,7 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
         </div>
 
         <div className="mt-auto pt-3 border-t border-beige-200/80 flex flex-wrap items-center justify-between gap-2 min-w-0">
-          <div className="text-base sm:text-lg font-display font-bold text-gold-600 truncate">
+          <div className="text-base sm:text-lg font-sans font-bold text-gold-600 truncate">
             {formatPrice(property.price)}
           </div>
           <div className="badge bg-beige-100 text-brown-800 border border-beige-300 text-[10px] sm:text-xs shrink-0">

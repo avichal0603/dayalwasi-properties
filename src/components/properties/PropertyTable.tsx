@@ -148,7 +148,7 @@ export function PropertyTable({ properties, onRowClick }: PropertyTableProps) {
 
                     {/* Price */}
                     <td className="py-3 px-4 min-w-[140px]">
-                      <span className="font-display font-bold text-base text-gold-700 block">
+                      <span className="font-sans font-bold text-base text-gold-700 block">
                         {formatPrice(property.price)}
                       </span>
                       {ppg > 0 && (
@@ -241,7 +241,7 @@ export function PropertyTable({ properties, onRowClick }: PropertyTableProps) {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="font-display font-bold text-sm text-gold-700">
+                  <span className="font-sans font-bold text-sm text-gold-700">
                     {formatPrice(property.price)}
                   </span>
                   <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
