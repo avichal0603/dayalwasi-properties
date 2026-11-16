@@ -12,6 +12,7 @@ import {
   BHK_OPTIONS,
   DEFAULT_CITY,
   formatPriceINR,
+  formatPriceInWords,
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
   GOOGLE_DRIVE_FOLDER_URL
@@ -26,12 +27,24 @@ interface PropertyFormProps {
   isLoading?: boolean;
 }
 
-const Label = ({ children, required }: { children: React.ReactNode, required?: boolean }) => (
+const Label = ({
+  children,
+  required,
+  badge,
+}: {
+  children: React.ReactNode;
+  required?: boolean;
+  badge?: string;
+}) => (
   <label className="flex items-center justify-between block text-sm font-medium text-brown-700 mb-1">
     <span>
       {children} {required && <span className="text-red-500 ml-0.5">*</span>}
     </span>
-    {required ? (
+    {badge ? (
+      <span className="text-[10px] text-gold-800 font-medium bg-gold-100 border border-gold-300 px-1.5 py-0.5 rounded">
+        {badge}
+      </span>
+    ) : required ? (
       <span className="text-[10px] text-red-500/70 font-normal">Required</span>
     ) : (
       <span className="text-[10px] text-brown-500 font-normal">(Optional)</span>
@@ -47,6 +60,7 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
     address: "",
     city: DEFAULT_CITY,
     area_gaj: 0,
+    area_sqft: 0,
     price: 0,
     facing: undefined,
     availability: "available",
@@ -61,6 +75,45 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
     notes: "",
     ...initialData,
   });
+
+  // Dual area state for synchronized Gaj and Square Feet inputs
+  const [gajInput, setGajInput] = useState<string>(() => {
+    if (initialData?.area_gaj) return String(initialData.area_gaj);
+    return "";
+  });
+  const [sqftInput, setSqftInput] = useState<string>(() => {
+    if (initialData?.area_sqft) return String(initialData.area_sqft);
+    if (initialData?.area_gaj) return String(Math.round(initialData.area_gaj * 9 * 100) / 100);
+    return "";
+  });
+
+  const handleGajChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setGajInput(val);
+    if (val === "" || isNaN(Number(val))) {
+      setSqftInput("");
+      setFormData((prev) => ({ ...prev, area_gaj: 0, area_sqft: 0 }));
+    } else {
+      const g = parseFloat(val);
+      const s = Math.round(g * 9 * 100) / 100;
+      setSqftInput(String(s));
+      setFormData((prev) => ({ ...prev, area_gaj: g, area_sqft: s }));
+    }
+  };
+
+  const handleSqftChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSqftInput(val);
+    if (val === "" || isNaN(Number(val))) {
+      setGajInput("");
+      setFormData((prev) => ({ ...prev, area_gaj: 0, area_sqft: 0 }));
+    } else {
+      const s = parseFloat(val);
+      const g = Math.round((s / 9) * 100) / 100;
+      setGajInput(String(g));
+      setFormData((prev) => ({ ...prev, area_gaj: g, area_sqft: s }));
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -77,11 +130,25 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData as PropertyFormData);
+
+    const finalGaj = parseFloat(gajInput) || formData.area_gaj || 0;
+    const finalSqft = parseFloat(sqftInput) || (finalGaj ? Math.round(finalGaj * 9 * 100) / 100 : 0);
+
+    if (!finalGaj || finalGaj <= 0) {
+      alert("Please enter property area in either Gaj or Square Feet.");
+      return;
+    }
+
+    onSubmit({
+      ...formData,
+      area_gaj: finalGaj,
+      area_sqft: finalSqft,
+    } as PropertyFormData);
   };
 
-  const sqft = formData.area_gaj ? gajToSqft(formData.area_gaj) : 0;
-  const pricePerGaj = formData.price && formData.area_gaj ? calcPricePerGaj(formData.price, formData.area_gaj) : 0;
+  const currentGaj = parseFloat(gajInput) || formData.area_gaj || 0;
+  const currentSqft = parseFloat(sqftInput) || (currentGaj ? gajToSqft(currentGaj) : 0);
+  const pricePerGaj = formData.price && currentGaj ? calcPricePerGaj(formData.price, currentGaj) : 0;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 page-enter pb-32">
@@ -137,29 +204,96 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
         </div>
       </div>
 
-      {/* Section 2: Owner Details - Moved up for prominence */}
+      {/* Section 2: Owner Details - Now completely optional */}
       <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "100ms" }}>
         <h2 className="section-title">Owner Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <div>
-            <Label required>Owner Name</Label>
-            <input required type="text" name="owner_name" value={formData.owner_name || ""} onChange={handleChange} className="input-field" />
+            <Label>Owner Name</Label>
+            <input
+              type="text"
+              name="owner_name"
+              value={formData.owner_name || ""}
+              onChange={handleChange}
+              className="input-field"
+              placeholder="e.g. Ramesh Kumar"
+            />
           </div>
           <div>
-            <Label required>Contact Number</Label>
-            <input required type="text" name="owner_contact" value={formData.owner_contact || ""} onChange={handleChange} className="input-field" />
+            <Label>Contact Number</Label>
+            <input
+              type="text"
+              name="owner_contact"
+              value={formData.owner_contact || ""}
+              onChange={handleChange}
+              className="input-field"
+              placeholder="e.g. +91 98765 43210"
+            />
           </div>
         </div>
       </div>
 
-      {/* Section 3: Measurements */}
+      {/* Section 3: Measurements & Layout - Dual Area in Gaj & Sq Ft */}
       <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "200ms" }}>
-        <h2 className="section-title">Measurements & Layout</h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+          <h2 className="section-title mb-0">Measurements & Layout</h2>
+          <span className="text-xs text-gold-800 bg-gold-50 border border-gold-200 px-2 py-0.5 rounded-md font-medium self-start sm:self-auto">
+            1 Gaj = 9 Sq Ft (Auto-converts)
+          </span>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
           <div>
-            <Label required>Area (Gaj)</Label>
-            <input required type="number" name="area_gaj" value={formData.area_gaj || ""} onChange={handleChange} className="input-field" min={0} step="0.01" />
-            {sqft > 0 && <p className="text-xs text-brown-500 mt-1">≈ {sqft.toFixed(2)} Sq Ft</p>}
+            <Label badge="Either is mandatory">Area in Gaj (गज)</Label>
+            <div className="relative">
+              <input
+                type="number"
+                name="area_gaj"
+                value={gajInput}
+                onChange={handleGajChange}
+                className="input-field pr-12"
+                min={0}
+                step="0.01"
+                placeholder="e.g. 100"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-brown-500 pointer-events-none">
+                Gaj
+              </span>
+            </div>
+            {parseFloat(sqftInput) > 0 && (
+              <p className="text-[11px] text-brown-500 mt-1">
+                ≈ {parseFloat(sqftInput).toLocaleString('en-IN')} Sq Ft
+              </p>
+            )}
+          </div>
+          <div>
+            <Label badge="Either is mandatory">Area in Sq. Ft. (स्क्वायर फीट)</Label>
+            <div className="relative">
+              <input
+                type="number"
+                name="area_sqft"
+                value={sqftInput}
+                onChange={handleSqftChange}
+                className="input-field pr-14"
+                min={0}
+                step="0.01"
+                placeholder="e.g. 900"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-brown-500 pointer-events-none">
+                Sq Ft
+              </span>
+            </div>
+            {parseFloat(gajInput) > 0 && (
+              <p className="text-[11px] text-brown-500 mt-1">
+                ≈ {parseFloat(gajInput).toLocaleString('en-IN')} Gaj
+              </p>
+            )}
+          </div>
+          <div>
+            <Label>BHK</Label>
+            <select name="bhk" value={formData.bhk || ""} onChange={handleChange} className="select-field">
+              <option value="">Select BHK</option>
+              {BHK_OPTIONS.map((o) => <option key={o} value={o}>{o} BHK</option>)}
+            </select>
           </div>
           <div>
             <Label>Plot Length (ft)</Label>
@@ -172,13 +306,6 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
           <div>
             <Label>Floors</Label>
             <input type="number" name="floors" value={formData.floors || ""} onChange={handleChange} className="input-field" min={0} />
-          </div>
-          <div>
-            <Label>BHK</Label>
-            <select name="bhk" value={formData.bhk || ""} onChange={handleChange} className="select-field">
-              <option value="">Select BHK</option>
-              {BHK_OPTIONS.map((o) => <option key={o} value={o}>{o} BHK</option>)}
-            </select>
           </div>
           <div>
             <Label>Bathrooms</Label>
@@ -229,13 +356,40 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           <div>
             <Label required>Price (₹)</Label>
-            <input required type="number" name="price" value={formData.price || ""} onChange={handleChange} className="input-field" min={0} />
-            {formData.price ? (
-              <p className="text-xs text-brown-500 mt-1">
-                {formatPriceINR(formData.price)} 
-                {pricePerGaj > 0 && ` (₹${formatPriceINR(pricePerGaj)} / Gaj)`}
+            <input
+              required
+              type="number"
+              name="price"
+              value={formData.price || ""}
+              onChange={handleChange}
+              className="input-field"
+              min={0}
+              placeholder="e.g. 7550000"
+            />
+            {formData.price && formData.price > 0 ? (
+              <div className="mt-2 p-2.5 rounded-lg bg-gold-50/90 border border-gold-200 space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-bold text-brown-950">
+                    {formatPriceINR(formData.price)}
+                  </span>
+                  {formatPriceInWords(formData.price) && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-white text-gold-900 border border-gold-300 shadow-xs">
+                      {formatPriceInWords(formData.price)}
+                    </span>
+                  )}
+                </div>
+                {pricePerGaj > 0 && (
+                  <p className="text-xs text-brown-600 font-medium">
+                    {formatPriceINR(pricePerGaj)} / Gaj
+                    {currentSqft > 0 && ` • ₹${Math.round(formData.price / currentSqft).toLocaleString('en-IN')} / Sq Ft`}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="text-xs text-brown-400 mt-1">
+                e.g. 7550000 (75 Lakh 50 Thousand)
               </p>
-            ) : null}
+            )}
           </div>
           <div>
             <Label>Registry Status</Label>
@@ -309,14 +463,18 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
       {/* Section 8: Google Drive Media */}
       <div className="glass-card p-4 sm:p-6 min-w-0 slide-up-fade" style={{ animationDelay: "650ms" }}>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-          <h2 className="section-title">Google Drive Archive (HD Videos & Photos)</h2>
+          <h2 className="section-title mb-0">Google Drive Archive (HD Videos & Photos)</h2>
           <button
             type="button"
-            onClick={() => setFormData(prev => ({ ...prev, drive_url: GOOGLE_DRIVE_FOLDER_URL }))}
-            className="text-xs font-semibold text-gold-700 hover:text-gold-900 bg-gold-50 hover:bg-gold-100 border border-gold-300 rounded-lg px-2.5 py-1 transition-colors self-start sm:self-auto flex items-center gap-1.5 shadow-sm"
+            onClick={() => {
+              setFormData((prev) => ({ ...prev, drive_url: GOOGLE_DRIVE_FOLDER_URL }));
+              window.open(GOOGLE_DRIVE_FOLDER_URL, "_blank", "noopener,noreferrer");
+            }}
+            className="text-xs font-semibold text-gold-700 hover:text-gold-900 bg-gold-50 hover:bg-gold-100 border border-gold-300 rounded-lg px-2.5 py-1.5 transition-colors self-start sm:self-auto flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer"
           >
             <FolderOpen className="w-3.5 h-3.5 text-gold-600" />
-            Use Dayalwasi Main Drive Folder
+            <span>Use Dayalwasi Main Drive Folder</span>
+            <span className="text-[10px] text-gold-500 font-normal">↗</span>
           </button>
         </div>
         <p className="text-xs text-brown-500 mb-4">
@@ -324,16 +482,26 @@ export function PropertyForm({ initialData, onSubmit, isLoading }: PropertyFormP
         </p>
         <div>
           <Label>Drive Folder or Video URL</Label>
-          <div className="relative">
+          <div className="relative flex items-center">
             <input
               type="url"
               name="drive_url"
               value={formData.drive_url || ""}
               onChange={handleChange}
-              className="input-field pl-10"
+              className="input-field pl-10 pr-24"
               placeholder="https://drive.google.com/drive/folders/..."
             />
             <FolderOpen className="w-4 h-4 text-brown-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            {formData.drive_url && (
+              <a
+                href={formData.drive_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute right-2 px-2.5 py-1 text-xs font-medium text-gold-800 bg-gold-100 hover:bg-gold-200 border border-gold-300 rounded-md transition-colors flex items-center gap-1"
+              >
+                Open ↗
+              </a>
+            )}
           </div>
         </div>
       </div>

@@ -63,6 +63,7 @@ export interface PropertyFormData {
   address: string;
   city: string;
   area_gaj: number;
+  area_sqft?: number | null;
   plot_length: number | null;
   plot_breadth: number | null;
   floors: number | null;
@@ -78,8 +79,8 @@ export interface PropertyFormData {
   loan_available: boolean;
   availability: AvailabilityStatus;
   construction_status: ConstructionStatus;
-  owner_name: string;
-  owner_contact: string;
+  owner_name?: string;
+  owner_contact?: string;
   notes: string | null;
   drive_url?: string | null;
   latitude: number | null;

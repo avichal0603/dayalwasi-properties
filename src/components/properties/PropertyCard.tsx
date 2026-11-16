@@ -62,7 +62,7 @@ export function PropertyCard({ property, onClick }: PropertyCardProps) {
       </div>
 
       <div className="p-3.5 sm:p-5 flex flex-col flex-grow min-w-0">
-        <h3 className="font-display font-bold text-base sm:text-lg text-brown-900 mb-2 line-clamp-2 break-words leading-snug">
+        <h3 className="font-sans font-semibold text-base sm:text-lg text-brown-900 mb-2 line-clamp-2 break-words leading-snug">
           {property.title}
         </h3>
 

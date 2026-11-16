@@ -2,8 +2,10 @@
 // Dayalwasi Properties — Utility Functions
 // ============================================
 
-import { GAJ_TO_SQFT, formatArea } from './constants';
+import { GAJ_TO_SQFT, formatArea, formatPriceInWords } from './constants';
 import type { Property, PropertyFilters } from './types';
+
+export { formatPriceInWords };
 
 /**
  * Convert Gaj to Square Feet

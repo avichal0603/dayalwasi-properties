@@ -194,7 +194,7 @@ export default function PropertyMapInner({
                     </div>
                   </div>
                 )}
-                <h3 className="font-display font-bold text-brown-900 text-sm truncate">
+                <h3 className="font-sans font-semibold text-brown-900 text-sm truncate">
                   {property.title}
                 </h3>
                 <p className="text-xs text-brown-500 mb-2 truncate">

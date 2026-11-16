@@ -128,7 +128,7 @@ export const DAYALBAGH_COLONIES = [
 // --- Defaults ---
 // --- Google Drive Archive Link ---
 export const GOOGLE_DRIVE_FOLDER_URL =
-  'https://drive.google.com/drive/folders/1iSQBJFX4xNGFJ24RajPjZju80AlSLvlO?usp=sharing';
+  'https://drive.google.com/drive/folders/1iSQBJFX4xNGFJ24RajPjZju80AlSLvlO';
 
 export const DEFAULT_CITY = 'Agra';
 export const DEFAULT_CENTER = { lat: 27.2244, lng: 78.0120 }; // Dayalbagh, Agra
@@ -153,6 +153,41 @@ export function formatPrice(price: number): string {
 
 export function formatPriceINR(price: number): string {
   return `₹${price.toLocaleString('en-IN')}`;
+}
+
+/**
+ * Format price into Indian denomination words (Crore, Lakh, Thousand)
+ * E.g., 7550000 -> "75 Lakh 50 Thousand"
+ * E.g., 12500000 -> "1 Crore 25 Lakh"
+ */
+export function formatPriceInWords(price: number): string {
+  if (!price || isNaN(price) || price <= 0) return '';
+  const num = Math.floor(price);
+
+  const crore = Math.floor(num / 10000000);
+  const lakh = Math.floor((num % 10000000) / 100000);
+  const thousand = Math.floor((num % 100000) / 1000);
+  const hundred = Math.floor((num % 1000) / 100);
+  const remainder = num % 100;
+
+  const parts: string[] = [];
+
+  if (crore > 0) parts.push(`${crore} Crore`);
+  if (lakh > 0) parts.push(`${lakh} Lakh`);
+  if (thousand > 0) parts.push(`${thousand} Thousand`);
+  if (hundred > 0) {
+    if (remainder > 0) {
+      parts.push(`${hundred * 100 + remainder}`);
+    } else {
+      parts.push(`${hundred} Hundred`);
+    }
+  } else if (remainder > 0 && parts.length > 0) {
+    parts.push(`${remainder}`);
+  } else if (remainder > 0 && parts.length === 0) {
+    parts.push(`${remainder}`);
+  }
+
+  return parts.join(' ');
 }
 
 export function formatArea(gaj: number, areaSqft?: number | null): string {
